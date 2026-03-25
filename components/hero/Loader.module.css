@@ -1,0 +1,141 @@
+/* GLOBAL (GSAP + classes string) */
+:global(.char) {
+  display: inline-block;
+  will-change: transform, filter;
+}
+
+:global(.line) {
+  display: block;
+}
+
+:global(.global-sweeper-overlay) {
+  background: conic-gradient(
+    from -90deg,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.9) var(--fill),
+    transparent var(--fill),
+    transparent 100%
+  );
+  mix-blend-mode: multiply;
+  transform: rotate(360deg);
+}
+
+:global(.flash) {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+}
+
+:global(.countdown-wrapper) {
+  position: fixed;
+  inset: 0;
+}
+
+
+/* LOCAL (styles.*) */
+.grainOverlay {
+  position: absolute;
+  inset: 0;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.2;
+  z-index: 100;
+  pointer-events: none;
+  filter: contrast(150%) brightness(100%);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  background: radial-gradient(circle, transparent 20%, black 140%);
+}
+
+.flickerOverlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 40%, rgba(255,255,200,0.1) 0%, transparent 70%);
+  z-index: 95;
+  mix-blend-mode: overlay;
+  animation: flickerLight 0.15s infinite;
+}
+
+@keyframes flickerLight {
+  0% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0.2; }
+}
+
+.filmDirt {
+  position: absolute;
+  inset: 0;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  background-size: 300px 300px;
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+  z-index: 96;
+  animation: filmDirtMove 8s linear infinite;
+}
+
+@keyframes filmDirtMove {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.2) 0px,
+    rgba(0,0,0,0.2) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  z-index: 97;
+  animation: scanlinesMove 6s linear infinite;
+}
+
+@keyframes scanlinesMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+.burnEdge {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+  z-index: 98;
+  animation: burnPulse 2s ease-in-out infinite;
+}
+
+@keyframes burnPulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+  100% { opacity: 0.5; }
+}
+
+.frameWrapper {
+  position: absolute;
+  inset: 4%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.intertitleFrameImg {
+  position: absolute;
+  inset: -6%;
+  background-image: url("/images/frame.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+  mix-blend-mode: screen;
+  filter: contrast(110%) brightness(105%);
+  animation: frameFlicker 0.2s infinite alternate;
+}
+
+@keyframes frameFlicker {
+  0% { opacity: 0.85; }
+  100% { opacity: 0.95; }
+}

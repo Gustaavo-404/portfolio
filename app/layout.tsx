@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import localFont from 'next/font/local'
+
+const chineseRocks = localFont({
+  src: '../public/fonts/chinese_rocks.woff2',
+  variable: '--font-chinese-rocks',
+})
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
