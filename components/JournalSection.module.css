@@ -1,0 +1,39 @@
+.journalSection {
+  perspective: 2500px;
+}
+
+.paperTexture {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background-image: url("https://www.transparenttextures.com/patterns/old-map.png");
+  z-index: 50;
+}
+
+.pageWrapper {
+  position: relative;
+  width: 85vw;
+  height: 85vh;
+  max-width: 72rem;
+}
+
+.journalPage {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #dcd5c5;
+  color: #1a1a1a;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(0,0,0,0.1);
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.05);
+
+  --b: 1;
+  filter: brightness(var(--b));
+
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+}

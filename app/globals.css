@@ -46,9 +46,28 @@ body {
   font-family: "Mea Culpa", cursive;
 }
 
-/* Custom Highlight*/
+/* Custom Highlight */
 ::selection {
   background-color: #444444;
   color: #f0eada;
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #dcd5c5;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a1a1a;
+  border: 2px solid #dcd5c5;
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
