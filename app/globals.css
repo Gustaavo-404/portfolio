@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mea+Culpa&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -34,6 +36,14 @@ body {
 
 .count{
   font-family: "Bebas Neue", sans-serif;
+}
+
+.subtitle{
+  font-family: "EB Garamond", serif;
+}
+
+.cursive-el{
+  font-family: "Mea Culpa", cursive;
 }
 
 /* Custom Highlight*/

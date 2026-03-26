@@ -1,4 +1,4 @@
-/* GLOBAL (GSAP + classes string) */
+/* GLOBAL (GSAP + string) */
 :global(.char) {
   display: inline-block;
   will-change: transform, filter;

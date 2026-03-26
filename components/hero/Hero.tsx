@@ -16,7 +16,7 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(`.${styles["hero-image"]}`, {
+      gsap.set(`.${styles["hero-wrapper"]}`, {
         opacity: 0,
         scale: 1.1,
         filter: "brightness(2) blur(5px)",
@@ -26,7 +26,7 @@ export default function Hero() {
 
       const tl = gsap.timeline();
 
-      tl.to(`.${styles["hero-image"]}`, {
+      tl.to(`.${styles["hero-wrapper"]}`, {
         opacity: 1,
         filter: "brightness(1.3) blur(0px)",
         scale: 1,
@@ -42,13 +42,56 @@ export default function Hero() {
           },
           "-=0.5"
         )
-        .to(`.${styles["hero-image"]}`, {
+        .to(`.${styles["hero-wrapper"]}`, {
           filter: "brightness(1)",
           duration: 0.4,
         });
     });
 
-    return () => ctx.revert();
+    const wrapper = document.querySelector(
+      `.${styles["hero-wrapper"]}`
+    ) as HTMLElement | null;
+
+    const mask = document.querySelector(
+      `.${styles["signature-mask"]}`
+    ) as HTMLElement | null;
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!wrapper || !mask) return;
+
+      const rect = wrapper.getBoundingClientRect();
+
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    };
+
+    wrapper?.addEventListener("mousemove", handleMouseMove);
+
+    const ticker = () => {
+      if (!mask) return;
+
+      const currentX =
+        parseFloat(getComputedStyle(mask).getPropertyValue("--x")) || 0;
+      const currentY =
+        parseFloat(getComputedStyle(mask).getPropertyValue("--y")) || 0;
+
+      const lerpX = currentX + (mouseX - currentX) * 0.15;
+      const lerpY = currentY + (mouseY - currentY) * 0.15;
+
+      mask.style.setProperty("--x", `${lerpX}px`);
+      mask.style.setProperty("--y", `${lerpY}px`);
+    };
+
+    gsap.ticker.add(ticker);
+
+    return () => {
+      ctx.revert();
+      wrapper?.removeEventListener("mousemove", handleMouseMove);
+      gsap.ticker.remove(ticker);
+    };
   }, []);
 
   return (
@@ -89,20 +132,66 @@ export default function Hero() {
           ))}
         </svg>
 
-        {/* IMAGEM */}
-        <div className="relative z-10 h-full flex items-center justify-center">
-          <div className={`${styles["hero-image"]} ${styles["glitch-image"]}`}>
-            <div className={styles["burn-overlay"]}></div>
-
-            <Image
-              src="/images/hr-portrait.png"
-              alt="Gustavo Barros portrait"
-              width={600}
-              height={800}
-              className="h-full w-auto object-contain"
-              priority
-            />
+        {/* HERO IMAGE */}
+        <div className={styles["hero-wrapper"]}>
+          
+          {/* BASE */}
+          <div className={styles["image-layer"]}>
+            <div className={styles.glitch}>
+              <Image
+                src="/images/hero-portrait-nsg.png"
+                alt="portrait"
+                width={600}
+                height={800}
+                className={styles.img}
+                priority
+              />
+              <Image
+                src="/images/hero-portrait-nsg.png"
+                alt=""
+                width={600}
+                height={800}
+                className={styles.glitchClone1}
+              />
+              <Image
+                src="/images/hero-portrait-nsg.png"
+                alt=""
+                width={600}
+                height={800}
+                className={styles.glitchClone2}
+              />
+            </div>
           </div>
+
+          {/* SIGNATURE */}
+          <div className={`${styles["image-layer"]} ${styles["signature-mask"]}`}>
+            <div className={styles.glitch}>
+              <Image
+                src="/images/hero-portrait-sg.png"
+                alt="portrait signed"
+                width={600}
+                height={800}
+                className={styles.img}
+                priority
+              />
+              <Image
+                src="/images/hero-portrait-sg.png"
+                alt=""
+                width={600}
+                height={800}
+                className={styles.glitchClone1}
+              />
+              <Image
+                src="/images/hero-portrait-sg.png"
+                alt=""
+                width={600}
+                height={800}
+                className={styles.glitchClone2}
+              />
+            </div>
+          </div>
+
+          <div className={styles["burn-overlay"]}></div>
         </div>
 
         {/* NOISE */}

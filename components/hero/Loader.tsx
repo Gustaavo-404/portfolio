@@ -51,7 +51,7 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
         return () => { tl.kill(); };
     }, [showCountdown]);
 
-    // TEXTO
+    // TEXT
     useEffect(() => {
         if (!countdownFinished) return;
         const el = containerRef.current;
