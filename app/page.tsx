@@ -5,6 +5,8 @@ import Loader from "@/components/hero/Loader";
 import Hero from "@/components/hero/Hero";
 import { AboutScrollSection } from "@/components/AboutScrollSection";
 import { JournalSection } from "@/components/JournalSection";
+import { JourneyIntroSection } from "@/components/JourneyIntroSection";
+import { JourneySection } from "@/components/JourneySection";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -18,6 +20,8 @@ export default function Home() {
           <Hero />
           <AboutScrollSection />
           <JournalSection />
+          <JourneyIntroSection />
+          <JourneySection />
         </div>
       )}
     </main>

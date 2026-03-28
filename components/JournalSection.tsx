@@ -259,7 +259,7 @@ export const JournalSection = () => {
                             <div className="space-y-6">
                                 <div>
                                     <div className="bg-black text-[#dcd5c5] p-2 inline-block px-4 rotate-[-1deg] mb-4">
-                                        <span className="title text-2xl uppercase tracking-tighter">Subject: Gustavo Barros</span>
+                                        <span className="title text-2xl uppercase tracking-tighter">Subject: Gustavo Barros // Location: São José do Rio Pardo</span>
                                     </div>
                                     <p className="subtitle text-[12px] leading-relaxed font-serif italic border-l-4 border-black pl-4">
                                         Operating from São José do Rio Pardo, SP. A strategic hub for high-end digital engineering.
