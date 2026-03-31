@@ -6,12 +6,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const TOTAL_FRAMES = 28;
-const COLS = 4;
-const ROWS = 7;
+const TOTAL_FRAMES = 36;
+const COLS = 6;
+const ROWS = 6;
 
-const FRAME_WIDTH = 3072 / COLS;
-const FRAME_HEIGHT = 3136 / ROWS;
+const FRAME_WIDTH = 2028 / COLS;
+const FRAME_HEIGHT = 3240 / ROWS;
 
 const CYCLES = 4;
 
@@ -365,7 +365,7 @@ export const JourneySection = () => {
                     width: "400vw",
                     backgroundImage: "url('/images/background.png')",
                     backgroundRepeat: "no-repeat",
-                    filter: "brightness(1.1) contrast(0.5)",
+                    filter: "brightness(1.6) contrast(0.3)",
                     backgroundSize: "cover",
                     backgroundPosition: "left bottom",
                 }}
@@ -383,7 +383,7 @@ export const JourneySection = () => {
                             </div>
 
                             <div className="bg-[#e8e2d2] text-[#1a1a1a] p-8 shadow-[12px_12px_0px_rgba(0,0,0,0.25)] border-2 border-[#8c826b] w-[450px] rotate-[-1deg] relative overflow-hidden transition-all duration-300 group-hover:rotate-0 group-hover:scale-105">
-                                <div className="absolute inset-0 opacity-[0.08] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstriped-suit.png')]"></div>
+                                <div className="absolute inset-0 opacity-[0.08] z-[30] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstriped-suit.png')]"></div>
 
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] select-none pointer-events-none scale-150">
                                     <p className="title text-[120px] font-black">VT</p>
@@ -442,20 +442,18 @@ export const JourneySection = () => {
             </div>
 
             {/* CHARACTER */}
-            <div
-                className="absolute left-1/2 -translate-x-1/2 z-20 pointer-events-none"
-                style={{ bottom: "-50px" }}
-            >
+            <div className="absolute left-1/2 -translate-x-1/2 z-20" style={{ bottom: "0px" }}>
                 <div
                     ref={charRef}
-                    className="mix-blend-multiply contrast-125 grayscale-[0.2]"
                     style={{
                         width: FRAME_WIDTH,
                         height: FRAME_HEIGHT,
-                        backgroundImage: "url('/images/vaultboyspritesheet.png')",
+                        backgroundImage: "url('/images/journey-sprite-sheet.png')",
                         backgroundRepeat: "no-repeat",
-                        backgroundSize: "3072px 3136px",
-                        imageRendering: "pixelated",
+                        backgroundSize: "2028px 3240px",
+                        transform: "scale(0.55)",
+                        transformOrigin: "bottom",
+                        filter: "contrast(0.9) brightness(1)"
                     }}
                 />
             </div>

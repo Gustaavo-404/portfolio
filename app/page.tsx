@@ -7,6 +7,8 @@ import { AboutScrollSection } from "@/components/AboutScrollSection";
 import { JournalSection } from "@/components/JournalSection";
 import { JourneyIntroSection } from "@/components/JourneyIntroSection";
 import { JourneySection } from "@/components/JourneySection";
+import { BootIntroSection } from "@/components/BootIntroSection";
+import { BootSection } from "@/components/BootSection";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,7 @@ export default function Home() {
           <JournalSection />
           <JourneyIntroSection />
           <JourneySection />
+          <BootSection />
         </div>
       )}
     </main>

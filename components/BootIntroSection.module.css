@@ -1,0 +1,17 @@
+.terminal {
+    font-size: clamp(80px, 8vw, 120px);
+    letter-spacing: 8px;
+    color: #8cffb0;
+    text-transform: uppercase;
+    perspective: 800px;
+}
+
+.char {
+    display: inline-block;
+    will-change: transform, opacity;
+}
+
+.space {
+    display: inline-block;
+    width: 12px;
+}
