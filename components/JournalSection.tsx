@@ -152,7 +152,7 @@ export const JournalSection = () => {
                                 <p className="subtitle text-[9px] uppercase tracking-widest opacity-60 mb-1">Academic Background</p>
 
                                 <div>
-                                    <span className="cursive-el text-3xl leading-none">Fatec Mococa // Systems Analysis</span>
+                                    <span className="title text-3xl leading-none">Fatec Mococa // Systems Analysis</span>
                                     <p className="text-sm leading-relaxed mt-1 border-l-2 border-black/10 pl-4 subtitle italic 
                                     first-letter:text-5xl first-letter:mr-2 
                                     first-letter:float-left first-letter:leading-[0.8] first-letter:font-serif">
@@ -161,7 +161,7 @@ export const JournalSection = () => {
                                 </div>
 
                                 <div className="pt-2">
-                                    <span className="cursive-el text-3xl leading-none">Etec // Internet Informatics</span>
+                                    <span className="title text-3xl leading-none">Etec // Internet Informatics</span>
                                     <p className="text-sm leading-relaxed mt-1 border-l-2 border-black/10 pl-4 subtitle italic 
                                     first-letter:text-5xl first-letter:mr-2 
                                     first-letter:float-left first-letter:leading-[0.8] first-letter:font-serif">

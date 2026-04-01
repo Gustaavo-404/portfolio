@@ -362,8 +362,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 300px;   /* controla o espaço REAL */
-  height: 300px;  /* controla o espaço REAL */
+  width: 300px;
+  height: 300px;
   overflow: hidden
 }
 
@@ -517,8 +517,6 @@
   vertical-align: middle;
   margin-left: 4px;
 }
-
-
 
 .coords {
   font-size: 8px;

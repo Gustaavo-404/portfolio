@@ -263,7 +263,7 @@ export const BootSection = () => {
           </div>
           <div className={styles.headerRight}>
             <span>RDY</span>
-            <span>LOC: VAULT-111</span>
+            <span>LOC: SJRP-SP-111</span>
             <span>2026</span>
           </div>
         </div>
