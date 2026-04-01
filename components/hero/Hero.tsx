@@ -197,7 +197,6 @@ const render = () => {
   const h = canvas.height;
   frameCount++;
 
-  // limpa com leve persistência para motion blur sutil
   ctx2d.clearRect(0, 0, w, h);
 
   // ── SPAWN ──
