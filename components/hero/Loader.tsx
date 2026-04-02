@@ -107,7 +107,7 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
 
             {/* COUNTDOWN */}
             {showCountdown && (
-                <div className="countdown-wrapper fixed inset-0 flex items-center justify-center z-50 bg-[#151515]">
+                <div className="countdown-wrapper fixed inset-0 flex items-center justify-center z-50 bg-[#303030]">
 
                     <div className={`global-sweeper-overlay absolute inset-[-150%] z-0 pointer-events-none opacity-50 ${styles.globalSweeperOverlay}`} />
 

@@ -87,7 +87,7 @@ export const JournalSection = () => {
                             <div className="flex items-center gap-4">
                                 <h2 className="title text-[5.5rem] leading-[0.8] uppercase tracking-tighter">Public <br /> Record</h2>
                                 <div className="border-4 border-black p-1 text-center rotate-[-15deg] mt-[-1rem]">
-                                    <p className="subtitle text-[9px] font-black uppercase">Cleared for<br />Release</p>
+                                    <p className="subtitle text-[9px] font-black uppercase">Cleared for<br />Analysis</p>
                                 </div>
                             </div>
 
@@ -99,7 +99,7 @@ export const JournalSection = () => {
                                         High-performance architecture design and advanced web aesthetics.
                                         Expertise in custom API development and secure authentication protocols (OAuth 2.0).
                                         Specialized in Artificial Intelligence integration, cloud ecosystems, and full-cycle system deployment.
-                                    </p>                                
+                                    </p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="subtitle text-[9px] uppercase tracking-widest opacity-60">Subject Status</p>
@@ -121,7 +121,7 @@ export const JournalSection = () => {
                             </div>
                         </div>
                         <div className="col-span-4 flex justify-center items-center relative h-full">
-                            <Image src="/images/vaultboy0.png" alt="Subject Front" width={342} height={941} className="h-[95%] w-auto object-contain grayscale contrast-125 mix-blend-multiply" />
+                            <Image src="/images/logo.png" alt="Subject Front" width={500} height={500} className="h-[95%] w-auto object-contain grayscale contrast-125 mix-blend-multiply" />
                             <div className="absolute top-2 right-2 flex flex-col items-center rotate-6">
                                 <Image src="/images/ornament-top.png" alt="Stamp" width={100} height={20} className="grayscale sepia invert opacity-30" />
                                 <span className="subtitle text-[8px] uppercase tracking-wider font-bold mt-[-5px]">Archive Dept.</span>
@@ -173,9 +173,9 @@ export const JournalSection = () => {
                             </div>
 
                             <div className="pt-6 border-t-4 border-double border-black/10 mt-auto">
-                                <p className="subtitle text-[9px] uppercase tracking-widest opacity-60 mb-3">Tech Stack Proficiency Breakdown</p>
+                                <p className="subtitle text-[12px] uppercase tracking-widest opacity-85 mb-3">Tech Stack Proficiency Breakdown</p>
 
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-3 subtitle text-[10px] uppercase tracking-widest font-bold">
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-3 subtitle text-[12px] uppercase tracking-widest font-bold">
                                     {[
                                         { name: "React // Next.js", proficiency: 92 },
                                         { name: "Node.js", proficiency: 88 },
@@ -217,10 +217,10 @@ export const JournalSection = () => {
 
                         <div className="col-span-4 flex justify-center items-center relative h-full">
                             <Image
-                                src="/images/vaultboy45.png"
+                                src="/images/computer.png"
                                 alt="Subject 45deg"
-                                width={315}
-                                height={949}
+                                width={400}
+                                height={400}
                                 className="h-[95%] w-auto object-contain grayscale contrast-125 mix-blend-multiply"
                             />
                         </div>
@@ -305,16 +305,53 @@ export const JournalSection = () => {
                         </div>
 
                         {/* Right side with the 90deg Vault Boy */}
-                        <div className="col-span-4 flex justify-center items-center relative h-full">
-                            <div className="absolute inset-0 pointer-events-none"></div>
-                            <Image
-                                src="/images/vaultboy90.png"
-                                alt="Subject Profile"
-                                width={234}
-                                height={956}
-                                className="h-[90%] w-auto object-contain grayscale contrast-125 mix-blend-multiply"
-                            />
-                            <div className="absolute top-0 right-0 title text-6xl opacity-10 rotate-90 origin-top-right translate-x-4">90°</div>
+                        <div className="col-span-4 flex flex-col justify-between py-4 pl-6 border-l border-black/10 h-full relative">
+
+                            {/* Top Section: Terminal / System Logs */}
+                            <div className="title text-[14px] leading-tight space-y-4">
+                                <div className="space-y-1">
+                                    <p className="opacity-40 font-bold tracking-tighter text-[9px] mb-2">[ SYSTEM_KERNEL_LOG ]</p>
+                                    <p className="flex justify-between"><span>CPU_USAGE:</span> <span className="font-bold">OPTIMIZED</span></p>
+                                    <p className="flex justify-between"><span>RUNTIME:</span> <span className="font-bold">NEXT_JS_V15</span></p>
+                                    <p className="flex justify-between"><span>STACK:</span> <span className="font-bold">TS // NEXT</span></p>
+                                    <p className="flex justify-between"><span>STATUS:</span> <span className="font-extrabold">READY</span></p>
+                                </div>
+
+                                <div className="pt-4 border-t border-black/10 space-y-0.5 opacity-80">
+                                    <p className="animate-pulse"> BOOTING_CORE...</p>
+                                    <p className=""> LOADING_UI_PRESETS</p>
+                                    <p className=""> ANALYZING_REPOS...</p>
+                                    <p className=""> 0x53797374656d_OK</p>
+                                </div>
+                            </div>
+
+                            {/* Decorative 90° Marker (Substituindo o antigo Vault Boy) */}
+                            <div className="absolute top-0 right-0 title text-6xl opacity-5 rotate-90 origin-top-right translate-x-4">
+                                SEC_90
+                            </div>
+
+                            {/* Bottom Section: Observation Note (Manuscript style) */}
+                            <div className="relative mt-auto">
+                                {/* Paper clipping effect */}
+                                <div className="absolute -top-3 -left-2 bg-black/10 w-8 h-4 rotate-[-45deg] blur-[1px]"></div>
+
+                                <div className="bg-[#f2efe4] p-4 border-l-4 border-black/40 shadow-sm rotate-[-1deg] transform transition-transform hover:rotate-0">
+                                    <p className="subtitle text-[9px] font-black mb-2 tracking-widest text-black/50 underline">
+                                        OBSERVATION_NOTE:
+                                    </p>
+                                    <p className="cursive-el text-[26px] leading-[1.1] mix-blend-multiply">
+                                        "A versatile operative specializing in full-stack engineering. 
+                                        Subject excels at delivering fluid user experiences while maintaining rigid backend stability. 
+                                        Strategic asset for high-stakes projects requiring end-to-end technical oversight and advanced visual logic."
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Footer Meta Data */}
+                            <div className="mt-4 opacity-30 font-mono text-[8px] flex justify-between uppercase">
+                                <span>Hash: MMXXVI_S14</span>
+                                <span>CRC: 8E2F</span>
+                            </div>
                         </div>
                     </div>
 
