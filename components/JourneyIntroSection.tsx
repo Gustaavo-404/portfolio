@@ -37,7 +37,7 @@ export const JourneyIntroSection = () => {
       scrollTrigger: {
         trigger: section,
         start: "top top",
-        end: "+=500%",
+        end: "+=300%",
         scrub: 1.2,
         pin: true,
       },
@@ -133,7 +133,7 @@ export const JourneyIntroSection = () => {
     })
 
     // 10. Hold & Explode
-    .to({}, { duration: 1.5 })
+    .to({}, { duration: 0.5 })
     .to(".year-counter", {
       scale: 18,
       opacity: 0,
@@ -153,10 +153,10 @@ export const JourneyIntroSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black text-white font-sans"
+      className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-[#0c0c0c] text-white font-sans"
     >
       {/* ── BACKGROUND LINES (Vertical Decorative) ── */}
-      <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden opacity-20">
+      <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden opacity-40">
         {[20, 40, 60, 80].map((left, i) => (
           <div
             key={i}
