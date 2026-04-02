@@ -132,7 +132,7 @@ export const JournalSection = () => {
                 </div>
 
                 {/* PAGE 2 - 45 DEGREE VIEW (Education & Tech Breakdown) */}
-                <div className={`journal-page ${styles.journalPage} absolute w-full h-full bg-[#dcd5c5] text-[#1a1a1a] p-10 flex flex-col border-r border-black/10 shadow-inner overflow-hidden`}>
+                <div className={`journal-page ${styles.journalPage} absolute w-full h-full bg-[#dcd5c5] text-[#1a1a1a] p-10 flex flex-col overflow-hidden`}>
 
                     <div className="flex justify-between items-end border-b-2 border-black pb-2 mb-8 relative">
                         <div className="absolute -top-1 right-12 title text-5xl opacity-10">45°</div>
@@ -146,25 +146,31 @@ export const JournalSection = () => {
                     </div>
 
                     <div className="grid grid-cols-12 gap-6 flex-1">
-                        <div className="col-span-8 border-r border-black/10 pr-6 flex flex-col space-y-6">
+                        <div className="col-span-8  pr-6 flex flex-col space-y-6">
 
                             <div className="space-y-4 font-serif">
                                 <p className="subtitle text-[9px] uppercase tracking-widest opacity-60 mb-1">Academic Background</p>
 
                                 <div>
-                                    <span className="title text-3xl leading-none">Fatec Mococa // Systems Analysis</span>
-                                    <p className="text-sm leading-relaxed mt-1 border-l-2 border-black/10 pl-4 subtitle italic 
+                                    <span className="inline-block bg-black text-[#dcd5c5] px-3 py-1 mb-4 title text-2xl leading-none rotate-[-0.5deg]">
+                                        Fatec Mococa // Systems Analysis
+                                    </span>
+                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-black/10 pl-4 subtitle italic 
                                     first-letter:text-5xl first-letter:mr-2 
                                     first-letter:float-left first-letter:leading-[0.8] first-letter:font-serif">
-                                        Started in 2023 with an expected graduation in July 2026. Deep immersion in advanced Software Engineering, focusing on complex Data Structures, Cloud Computing architectures, and Full-Stack lifecycle management. Research and development focused on scalable system reliability and modern development patterns.
+                                        Started in 2023 with an expected graduation in July 2026. Deep immersion in advanced Software Engineering,
+                                        focusing on complex Data Structures, Cloud Computing architectures, and Full-Stack lifecycle management.
+                                        Research and development focused on scalable system reliability and modern development patterns.
                                     </p>
                                 </div>
 
-                                <div className="pt-2">
-                                    <span className="title text-3xl leading-none">Etec // Internet Informatics</span>
-                                    <p className="text-sm leading-relaxed mt-1 border-l-2 border-black/10 pl-4 subtitle italic 
-                                    first-letter:text-5xl first-letter:mr-2 
-                                    first-letter:float-left first-letter:leading-[0.8] first-letter:font-serif">
+                                <div className="pt-4 flex flex-col items-start">
+                                    <span className="inline-block bg-black text-[#dcd5c5] px-3 py-1 mb-4 title text-2xl leading-none rotate-[0.5deg]">
+                                        Etec // Internet Informatics
+                                    </span>
+                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-black/10 pl-4 subtitle italic 
+                                        first-letter:text-5xl first-letter:mr-2 
+                                        first-letter:float-left first-letter:leading-[0.8] first-letter:font-serif">
                                         Completed between 2020 and 2022. Established a rigorous technical foundation in Web Development,
                                         including deep dives into Internet Protocols (TCP/IP, HTTP), basic System Architecture, and
                                         responsive front-end design. Focused on the core principles of algorithmic logic and database management.
@@ -172,27 +178,40 @@ export const JournalSection = () => {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t-4 border-double border-black/10 mt-auto">
+                            <div className="pt-6 border-t-7 border-double border-black/10 mt-auto">
                                 <p className="subtitle text-[12px] uppercase tracking-widest opacity-85 mb-3">Tech Stack Proficiency Breakdown</p>
 
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-3 subtitle text-[12px] uppercase tracking-widest font-bold">
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-4 subtitle text-[12px] uppercase tracking-widest font-bold">
                                     {[
-                                        { name: "React // Next.js", proficiency: 92 },
-                                        { name: "Node.js", proficiency: 88 },
-                                        { name: "Java // Spring Boot", proficiency: 85 },
-                                        { name: "Python", proficiency: 81 },
-                                        { name: "PostgreSQL // MySQL", proficiency: 86 },
-                                        { name: "Animations", proficiency: 90 },
+                                        { name: "React // Next.js", proficiency: 92, icon: "next.png" },
+                                        { name: "Node.js", proficiency: 89, icon: "node.png" },
+                                        { name: "Java // Spring Boot", proficiency: 85, icon: "java.png" },
+                                        { name: "Python", proficiency: 83, icon: "python.png" },
+                                        { name: "PostgreSQL // MySQL", proficiency: 91, icon: "mysql.png" },
+                                        { name: "Typescript", proficiency: 79, icon: "typescript.png" },
                                     ].map((stack, index) => (
-                                        <div key={index} className="flex justify-between items-center border-b border-black/10 pb-1.5 h-8">
-                                            <span>{stack.name}</span>
+                                        <div key={index} className="flex justify-between items-center border-b border-black/10 pb-2 h-10">
+                                            {/* Lado Esquerdo: Ícone + Nome */}
+                                            <div className="flex items-center gap-3">
+                                                <div className="relative w-6 h-6 shrink-0">
+                                                    <Image
+                                                        src={`/images/icons/${stack.icon}`}
+                                                        alt={stack.name}
+                                                        fill
+                                                        className="object-contain grayscale contrast-125 mix-blend-multiply opacity-80"
+                                                    />
+                                                </div>
+                                                <span className="leading-none">{stack.name}</span>
+                                            </div>
+
+                                            {/* Lado Direito: Estrelas + % */}
                                             <div className="flex items-center gap-2">
                                                 <div className="flex items-center gap-0.5">
                                                     {[...Array(5)].map((_, i) => {
                                                         const rating = stack.proficiency / 20;
                                                         const isFilled = i < Math.round(rating);
                                                         return (
-                                                            <div key={i} className={`relative w-3 h-3 ${isFilled ? 'opacity-100' : 'opacity-20'}`}>
+                                                            <div key={i} className={`relative w-3 h-3 ${isFilled ? 'opacity-100' : 'opacity-10'}`}>
                                                                 <Image
                                                                     src="/images/star.png"
                                                                     alt="Star"
@@ -203,7 +222,7 @@ export const JournalSection = () => {
                                                         );
                                                     })}
                                                 </div>
-                                                <span className="text-xs opacity-50 w-10 text-right">[{stack.proficiency}%]</span>
+                                                <span className="text-[10px] opacity-50 w-10 text-right">[{stack.proficiency}%]</span>
                                             </div>
                                         </div>
                                     ))}
@@ -215,13 +234,14 @@ export const JournalSection = () => {
                             </div>
                         </div>
 
-                        <div className="col-span-4 flex justify-center items-center relative h-full">
+                        {/* Lado direito: Imagem do Computador ocupando todo o espaço */}
+                        <div className="col-span-4 relative border-2 border-black p-1 h-full w-full -ml-6">
                             <Image
-                                src="/images/computer.png"
+                                src="/images/computer-il.png"
                                 alt="Subject 45deg"
-                                width={400}
-                                height={400}
-                                className="h-[95%] w-auto object-contain grayscale contrast-125 mix-blend-multiply"
+                                fill
+                                className="object-cover object-left grayscale contrast-125 mix-blend-multiply"
+                                priority
                             />
                         </div>
                     </div>
@@ -240,7 +260,7 @@ export const JournalSection = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-12 gap-6 flex-1">
+                    <div className="grid grid-cols-12 flex-1">
                         <div className="col-span-8 border-r border-black/10 pr-6 flex flex-col">
 
                             {/* City Image Section */}
@@ -340,8 +360,8 @@ export const JournalSection = () => {
                                         OBSERVATION_NOTE:
                                     </p>
                                     <p className="cursive-el text-[26px] leading-[1.1] mix-blend-multiply">
-                                        "A versatile operative specializing in full-stack engineering. 
-                                        Subject excels at delivering fluid user experiences while maintaining rigid backend stability. 
+                                        "A versatile operative specializing in full-stack engineering.
+                                        Subject excels at delivering fluid user experiences while maintaining rigid backend stability.
                                         Strategic asset for high-stakes projects requiring end-to-end technical oversight and advanced visual logic."
                                     </p>
                                 </div>
