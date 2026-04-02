@@ -15,7 +15,7 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
     const enableScanlines = true;
     const enableBurnEdge = true;
 
-    // COUNTDOWN
+    // ── COUNTDOWN ──
     useEffect(() => {
         if (!showCountdown) return;
 
@@ -51,83 +51,174 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
         return () => { tl.kill(); };
     }, [showCountdown]);
 
-    // TEXT
+    // ── INTERTITLE ──
     useEffect(() => {
         if (!countdownFinished) return;
         const el = containerRef.current;
         if (!el) return;
 
-        const lines = ["WELCOME!", "I'M GUSTAVO,", "FULL STACK DEVELOPER."];
+        el.innerHTML = `
+            <div class="it-ornament subtitle">✦ ✦ ✦</div>
 
-        el.innerHTML = lines.map(line =>
-            `<div class="line">${line.split("").map(char =>
-                `<span class="char">${char === " " ? "&nbsp;" : char}</span>`
-            ).join("")}</div>`
-        ).join("");
+            <div class="it-name cursive-el">
+                ${Array.from("Gustavo Barros").map(c =>
+            `<span class="it-char-name">${c === " " ? "&nbsp;" : c}</span>`
+        ).join("")}
+            </div>
+
+            <div class="it-divider-wrap">
+                <div class="it-divider-line it-divider-left"></div>
+                <span class="it-presents subtitle">presents</span>
+                <div class="it-divider-line it-divider-right"></div>
+            </div>
+
+            <div class="it-title-wrap title">
+                ${Array.from("FULL STACK").map(c =>
+            `<span class="it-char-title">${c === " " ? "&nbsp;" : c}</span>`
+        ).join("")}
+                <br/>
+                ${Array.from("D.E.V.E.L.O.P.E.R.").map(c =>
+            `<span class="it-char-title">${c}</span>`
+        ).join("")}
+            </div>
+
+            <div class="it-portfolio-wrap subtitle">
+                ${Array.from("— Portfolio —").map(c =>
+            `<span class="it-char-portfolio">${c === " " ? "&nbsp;" : c}</span>`
+        ).join("")}
+            </div>
+
+            <div class="it-rule-wrap">
+                <div class="it-rule"></div>
+            </div>
+
+            <div class="it-copyright subtitle">
+                ${Array.from("Copyright © 2026").map(c =>
+            `<span class="it-char-copy">${c === " " ? "&nbsp;" : c}</span>`
+        ).join("")}
+            </div>
+        `;
 
         const mainTl = gsap.timeline({
             onComplete: () => {
                 gsap.to(".loader", {
                     opacity: 0,
-                    duration: 1,
-                    onComplete: onFinish
+                    duration: 1.2,
+                    delay: 1.2,
+                    onComplete: onFinish,
                 });
             },
         });
 
-        gsap.set(".char", {
-            opacity: 0,
-            scale: 1.2,
-            filter: "blur(10px)",
-            y: 20
-        });
+        gsap.set(".it-ornament", { opacity: 0 });
+        gsap.set(".it-char-name", { opacity: 0, y: 18, filter: "blur(6px)" });
+        gsap.set(".it-presents", { opacity: 0 });
+        gsap.set(".it-divider-left", { opacity: 1, scaleX: 0, transformOrigin: "right center" });
+        gsap.set(".it-divider-right", { opacity: 1, scaleX: 0, transformOrigin: "left center" });
+        gsap.set(".it-char-title", { opacity: 0, y: 24, filter: "blur(8px)", scale: 1.15 });
+        gsap.set(".it-char-portfolio", { opacity: 0, y: 10, filter: "blur(4px)" });
+        gsap.set(".it-rule", { scaleX: 0, transformOrigin: "center center" });
+        gsap.set(".it-char-copy", { opacity: 0 });
 
-        mainTl.to(".char", {
+        // 1. Ornament
+        mainTl.to(".it-ornament", {
             opacity: 1,
-            scale: 1,
-            filter: "blur(0px)",
-            y: 0,
-            duration: 0.7,
-            ease: "power4.out",
-            stagger: 0.04
+            duration: 0.4,
+            ease: "power2.out",
         })
-        .to(".char", {
-            x: "random(-1,1)",
-            y: "random(-1,1)",
-            duration: 0.1,
-            repeat: 12,
-            yoyo: true,
-            ease: "none"
-        }, "-=0.5");
 
+            // 2. Name
+            .to(".it-char-name", {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.4,
+                ease: "power3.out",
+                stagger: 0.02,
+            }, "-=0.2")
+
+            // 3. Divider
+            .to(".it-divider-left, .it-divider-right", {
+                scaleX: 1,
+                duration: 0.4,
+                ease: "power2.inOut",
+                stagger: 0.1
+            }, "-=0.1")
+            .to(".it-presents", {
+                opacity: 1,
+                duration: 0.2,
+                ease: "power2.out",
+            }, "-=0.3")
+
+            // 4. Full Stack Developer
+            .to(".it-char-title", {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                filter: "blur(0px)",
+                duration: 0.5,
+                ease: "expo.out",
+                stagger: 0.02,
+            }, "-=0.2")
+
+            // 5. Tremor
+            .to(".it-char-title", {
+                x: "random(-1.5, 1.5)",
+                y: "random(-1, 1)",
+                duration: 0.08,
+                repeat: 5,
+                yoyo: true,
+                ease: "none",
+            }, "-=0.1")
+
+            // 6. — Portfolio —
+            .to(".it-char-portfolio", {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.4,
+                ease: "power2.out",
+                stagger: 0.02,
+            }, "-=0.4")
+
+            // 7. Line
+            .to(".it-rule", {
+                scaleX: 1,
+                duration: 0.7,
+                ease: "power3.inOut",
+            }, "-=0.2")
+
+            // 8. Copyright
+            .to(".it-char-copy", {
+                opacity: 1,
+                duration: 0.04,
+                stagger: 0.04,
+                ease: "none",
+            }, "+=0.1");
+
+        return () => { mainTl.kill(); };
     }, [countdownFinished, onFinish]);
 
     return (
-        <div className="loader fixed inset-0 z-[9999] bg-[#0d0d0d] flex items-center justify-center overflow-hidden">
+        <div className="loader fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden">
 
             {/* COUNTDOWN */}
             {showCountdown && (
                 <div className="countdown-wrapper fixed inset-0 flex items-center justify-center z-50 bg-[#303030]">
-
                     <div className={`global-sweeper-overlay absolute inset-[-150%] z-0 pointer-events-none opacity-50 ${styles.globalSweeperOverlay}`} />
-
                     <div className="absolute inset-0 pointer-events-none z-10">
                         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-[#e8e1cf] opacity-20 -translate-y-1/2" />
                         <div className="absolute left-1/2 top-0 h-full w-[1px] bg-[#e8e1cf] opacity-20 -translate-x-1/2" />
                     </div>
-
                     <div className="relative w-[50vh] h-[50vh] max-w-[600px] max-h-[600px] rounded-full border-[3px] border-[#e8e1cf] flex items-center justify-center bg-transparent z-20">
                         <div className="absolute w-[96%] h-[96%] border border-[#e8e1cf] opacity-20 rounded-full" />
                         <div className="absolute w-[88%] h-[88%] border border-[#e8e1cf] opacity-10 rounded-full" />
-
                         <span
-                            className="relative z-30 text-[#f0eada] text-[35vh] leading-none tabular-nums font-normal"
-                            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                            className="count relative z-30 text-[#f0eada] text-[35vh] leading-none tabular-nums font-normal"
                         >
                             {currentNum}
                         </span>
                     </div>
-
                     <div className="sweeper-line absolute top-1/2 left-1/2 w-[150vw] h-[2px] bg-[#e8e1cf] origin-left z-[60] opacity-30 -translate-y-1/2 pointer-events-none" />
                     <div className="flash absolute inset-0 bg-white pointer-events-none z-[70] opacity-0" />
                 </div>
@@ -138,22 +229,17 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
                 <div className={styles.intertitleFrameImg} />
             </div>
 
-            {/* TEXTO */}
+            {/* INTERTITLE */}
             <div
                 ref={containerRef}
-                className={`title relative z-10 text-[#f0eada] text-[clamp(32px,8vw,100px)] text-left leading-[1.05] tracking-[0.02em] w-[90%] max-w-[900px] uppercase transition-opacity duration-300 ${
-                    !countdownFinished ? "opacity-0" : "opacity-100"
-                }`}
-                style={{
-                    fontFamily: "var(--font-chinese-rocks)",
-                    textShadow: "4px 4px 0px rgba(0,0,0,0.8)"
-                }}
+                className={`intertitle relative z-10 flex flex-col items-center text-center transition-opacity duration-300 ${!countdownFinished ? "opacity-0" : "opacity-100"
+                    }`}
+                style={{ width: "62%", maxWidth: "640px" }}
             />
 
-            {/* TEXTURAS */}
+            {/* TEXTURE */}
             <div className={styles.grainOverlay} />
             <div className={styles.vignette} />
-
             {enableFlicker && <div className={styles.flickerOverlay} />}
             {enableFilmDirt && <div className={styles.filmDirt} />}
             {enableScanlines && <div className={styles.scanlines} />}
