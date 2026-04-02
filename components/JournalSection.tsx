@@ -95,9 +95,10 @@ export const JournalSection = () => {
                                 <div className="col-span-2 space-y-1">
                                     <p className="subtitle text-[9px] uppercase tracking-widest opacity-60">Primary Role // Specialization</p>
                                     <p className="title text-4xl font-bold">Full Stack Developer // Specialized</p>
-                                    <p className="text-[12px] leading-relaxed font-serif italic">
+                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-[#1a1a1a]/20 pl-6 
+                                    subtitle italic font-medium antialiased">
                                         High-performance architecture design and advanced web aesthetics.
-                                        Expertise in custom API development and secure authentication protocols (OAuth 2.0).
+                                        Expertise in custom API development and secure authentication protocols.
                                         Specialized in Artificial Intelligence integration, cloud ecosystems, and full-cycle system deployment.
                                     </p>
                                 </div>
@@ -155,9 +156,11 @@ export const JournalSection = () => {
                                     <span className="inline-block bg-black text-[#dcd5c5] px-3 py-1 mb-4 title text-2xl leading-none rotate-[-0.5deg]">
                                         Fatec Mococa // Systems Analysis
                                     </span>
-                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-black/10 pl-4 subtitle italic 
-                                    first-letter:text-5xl first-letter:mr-2 
-                                    first-letter:float-left first-letter:leading-[0.8] first-letter:font-serif">
+                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-[#1a1a1a]/20 pl-6 
+                                    subtitle italic font-medium antialiased
+                                    first-letter:text-5xl first-letter:mr-3 
+                                    first-letter:float-left first-letter:leading-[0.85] 
+                                    first-letter:font-serif first-letter:not-italic first-letter:text-[#1a1a1a]">
                                         Started in 2023 with an expected graduation in July 2026. Deep immersion in advanced Software Engineering,
                                         focusing on complex Data Structures, Cloud Computing architectures, and Full-Stack lifecycle management.
                                         Research and development focused on scalable system reliability and modern development patterns.
@@ -168,9 +171,11 @@ export const JournalSection = () => {
                                     <span className="inline-block bg-black text-[#dcd5c5] px-3 py-1 mb-4 title text-2xl leading-none rotate-[0.5deg]">
                                         Etec // Internet Informatics
                                     </span>
-                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-black/10 pl-4 subtitle italic 
-                                        first-letter:text-5xl first-letter:mr-2 
-                                        first-letter:float-left first-letter:leading-[0.8] first-letter:font-serif">
+                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-[#1a1a1a]/20 pl-6 
+                                    subtitle italic font-medium antialiased
+                                    first-letter:text-5xl first-letter:mr-3 
+                                    first-letter:float-left first-letter:leading-[0.85] 
+                                    first-letter:font-serif first-letter:not-italic first-letter:text-[#1a1a1a]">
                                         Completed between 2020 and 2022. Established a rigorous technical foundation in Web Development,
                                         including deep dives into Internet Protocols (TCP/IP, HTTP), basic System Architecture, and
                                         responsive front-end design. Focused on the core principles of algorithmic logic and database management.
@@ -281,9 +286,9 @@ export const JournalSection = () => {
                                     <div className="bg-black text-[#dcd5c5] p-2 inline-block px-4 rotate-[-1deg] mb-4">
                                         <span className="title text-2xl uppercase tracking-tighter">Subject: Gustavo Barros // Location: São José do Rio Pardo</span>
                                     </div>
-                                    <p className="subtitle text-[12px] leading-relaxed font-serif italic border-l-4 border-black pl-4">
-                                        Operating from São José do Rio Pardo, SP. A strategic hub for high-end digital engineering.
-                                        Focused on bridging the gap between complex backend logic and cinematic front-end experiences.
+                                    <p className="clear-both block text-sm leading-relaxed border-l-2 border-[#1a1a1a]/20 pl-6 
+                                    subtitle italic font-medium antialiased">
+                                        Geographical Origin: São José do Rio Pardo, SP. Bridging complex logic with cinematic aesthetics.
                                     </p>
                                 </div>
 
