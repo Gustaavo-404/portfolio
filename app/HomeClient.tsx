@@ -9,6 +9,7 @@ import { JourneyIntroSection } from "@/components/JourneyIntroSection";
 import { JourneySection } from "@/components/JourneySection";
 import { BootSection } from "@/components/BootSection";
 import { ContactSection } from "@/components/ContactSection";
+import { ConnectionLostSection } from "@/components/ConnectionLostSection";
 
 export default function HomeClient() {
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,7 @@ export default function HomeClient() {
           <JourneySection />
           <BootSection />
           <ContactSection />
+          <ConnectionLostSection />
         </div>
       )}
     </main>

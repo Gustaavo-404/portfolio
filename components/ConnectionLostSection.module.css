@@ -1,0 +1,224 @@
+/* ── Section wrapper ── */
+.section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #020f08;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Courier New', Courier, monospace;
+  color: #8cffb0;
+}
+
+/* ── Scanlines ── */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.22) 0px, rgba(0,0,0,0.22) 1px,
+    transparent 2px, transparent 4px
+  );
+  animation: scanRoll 6s linear infinite;
+}
+@keyframes scanRoll {
+  from { background-position: 0 0; }
+  to   { background-position: 0 400px; }
+}
+
+/* ── Film grain ── */
+.noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: overlay;
+}
+
+/* ── Static burst ── */
+.static {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  /* Monochrome TV static — generated with CSS background */
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  animation: staticAnim 0.05s steps(1) infinite;
+  opacity: 0;
+}
+@keyframes staticAnim {
+  0%   { background-position: 0   0; }
+  25%  { background-position: 50px 20px; }
+  50%  { background-position: 10px 80px; }
+  75%  { background-position: 90px 40px; }
+  100% { background-position: 30px 60px; }
+}
+
+/* ── Final overlay ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: #000000;
+}
+
+/* ── Corner brackets ── */
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.4;
+}
+.cornerTL { top: 24px;    left: 24px;    border-top: 1px solid #8cffb0; border-left: 1px solid #8cffb0; }
+.cornerTR { top: 24px;    right: 24px;   border-top: 1px solid #8cffb0; border-right: 1px solid #8cffb0; }
+.cornerBL { bottom: 24px; left: 24px;    border-bottom: 1px solid #8cffb0; border-left: 1px solid #8cffb0; }
+.cornerBR { bottom: 24px; right: 24px;   border-bottom: 1px solid #8cffb0; border-right: 1px solid #8cffb0; }
+
+/* ── HUD ── */
+.hud {
+  position: absolute;
+  top: 32px;
+  left: 52px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hudRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.hudKey {
+  opacity: 0.3;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.hudVal {
+  opacity: 0.55;
+}
+
+.hudBlink {
+  animation: blink 1.4s step-end infinite;
+}
+
+/* Signal bar */
+.signalBar {
+  width: 80px;
+  height: 5px;
+  border: 1px solid rgba(140,255,176,0.3);
+  background: rgba(140,255,176,0.04);
+  overflow: hidden;
+  position: relative;
+}
+
+.signalBar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px, transparent 7px,
+    rgba(0,0,0,0.3) 7px, rgba(0,0,0,0.3) 8px
+  );
+}
+
+.signalFill {
+  height: 100%;
+  background: #8cffb0;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  transition: width 0.05s linear;
+}
+
+/* ── Center text ── */
+.center {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+/* textWrap hosts the inline letter spans via JS */
+.textWrap {
+  font-size: clamp(40px, 6.5vw, 96px);
+  letter-spacing: 0.14em;
+  color: #8cffb0;
+  text-transform: uppercase;
+  font-weight: 900;
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  /* No glow, no shadow — clean */
+}
+
+.char {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+.space {
+  display: inline-block;
+  width: 0.32em;
+}
+
+.sub {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #8cffb0;
+  margin: 0;
+  font-weight: normal;
+  max-width: 480px;
+}
+
+/* ── Bottom meta ── */
+.bottomMeta {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  opacity: 0.2;
+}
+
+.bottomMetaItem {
+  white-space: nowrap;
+}
+
+.cursor {
+  display: inline-block;
+  width: 7px;
+  height: 12px;
+  background: #8cffb0;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%     { opacity: 0; }
+}
