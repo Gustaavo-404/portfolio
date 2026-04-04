@@ -8,13 +8,13 @@ import SplitType from "split-type";
 gsap.registerPlugin(ScrollTrigger);
 
 const FLASHBACK_IMAGES = [
-  "/images/flashback/frameflashback1.png",
-  "/images/flashback/frameflashback2.png",
-  "/images/flashback/frameflashback3.png",
+  "/gifs/flashback-1.gif",
+  "/gifs/flashback-2.gif",
+  "/gifs/flashback-3.gif",
 ];
 
 const YEAR_START = 2026;
-const YEAR_END   = 2019;
+const YEAR_END = 2019;
 const REWIND_DUR = 12;
 
 const RISE_DUR = 0.6;
@@ -25,9 +25,9 @@ const PHOTO_INTERVAL =
   (REWIND_DUR - (RISE_DUR + HOLD_DUR + EXIT_DUR)) / (FLASHBACK_IMAGES.length - 1);
 const START_TIMES = FLASHBACK_IMAGES.map((_, i) => i * PHOTO_INTERVAL);
 
-const ROTATIONS   = [-2.2, 1.8, -3.0];
+const ROTATIONS = [-2.2, 1.8, -3.0];
 // Each photo drifts in from a different horizontal offset
-const X_OFFSETS   = ["-10vw", "10vw", "-6vw"];
+const X_OFFSETS = ["-10vw", "10vw", "-6vw"];
 
 function getDigits(year: number): string[] {
   return String(year).split("");
@@ -36,8 +36,8 @@ function getDigits(year: number): string[] {
 export const JourneyIntroSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   // Hidden span that GSAP tweens for the innerText value
-  const yearRef    = useRef<HTMLSpanElement>(null);
-  const photoRefs  = useRef<(HTMLDivElement | null)[]>([]);
+  const yearRef = useRef<HTMLSpanElement>(null);
+  const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // 4 refs, one per digit column
   const col0 = useRef<HTMLDivElement>(null);
@@ -77,11 +77,11 @@ export const JourneyIntroSection = () => {
     const section = sectionRef.current;
     if (!section) return;
 
-    const titleEl    = section.querySelector(".split-title");
+    const titleEl = section.querySelector(".split-title");
     const subtitleEl = section.querySelector(".split-subtitle");
     if (!titleEl || !subtitleEl) return;
 
-    const splitTitle    = new SplitType(titleEl    as HTMLElement, { types: "chars,words" });
+    const splitTitle = new SplitType(titleEl as HTMLElement, { types: "chars,words" });
     const splitSubtitle = new SplitType(subtitleEl as HTMLElement, { types: "chars" });
 
     // ── Initial states ────────────────────────────────────────────
@@ -90,12 +90,12 @@ export const JourneyIntroSection = () => {
       filter: "blur(8px)", transformOrigin: "50% 50% -20px",
     });
     gsap.set(".split-subtitle .char", { opacity: 0, x: -8 });
-    gsap.set(".year-counter-wrap",    { opacity: 0, x: -30 });
-    gsap.set(".timeline-bar",         { scaleY: 0, transformOrigin: "top" });
-    gsap.set(".meta-ui",              { opacity: 0 });
-    gsap.set(".scratch-line",         { scaleY: 0, transformOrigin: "top" });
-    gsap.set(".frame-corner",         { opacity: 0, scale: 0.7 });
-    gsap.set(".progress-dot",         { opacity: 0, scale: 0 });
+    gsap.set(".year-counter-wrap", { opacity: 0, x: -30 });
+    gsap.set(".timeline-bar", { scaleY: 0, transformOrigin: "top" });
+    gsap.set(".meta-ui", { opacity: 0 });
+    gsap.set(".scratch-line", { scaleY: 0, transformOrigin: "top" });
+    gsap.set(".frame-corner", { opacity: 0, scale: 0.7 });
+    gsap.set(".progress-dot", { opacity: 0, scale: 0 });
 
     setSlotInstant(YEAR_START);
 
@@ -185,7 +185,7 @@ export const JourneyIntroSection = () => {
     const rl = "<"; // relative label: all photos anchored to start of year tween
 
     START_TIMES.forEach((startTime, i) => {
-      const el  = photoRefs.current[i];
+      const el = photoRefs.current[i];
       if (!el) return;
       const rot = ROTATIONS[i];
       const xOff = X_OFFSETS[i];
@@ -245,7 +245,7 @@ export const JourneyIntroSection = () => {
     };
   }, { scope: sectionRef });
 
-  const yearStops  = [2025, 2023, 2022];
+  const yearStops = [2025, 2023, 2022];
   const initDigits = getDigits(YEAR_START); // ["2","0","2","6"]
 
   return (
@@ -376,7 +376,7 @@ export const JourneyIntroSection = () => {
                       willChange: "transform",
                     }}
                   >
-                    {["0","1","2","3","4","5","6","7","8","9"].map((n) => (
+                    {["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].map((n) => (
                       <span
                         key={n}
                         style={{
@@ -449,6 +449,8 @@ export const JourneyIntroSection = () => {
                     width: "100%", display: "block",
                     aspectRatio: "4/3", objectFit: "cover",
                     filter: "grayscale(100%) contrast(1.08) brightness(0.88)",
+                    background: "white",
+                    objectPosition: i === 1 ? "center top" : "center center",
                   }}
                 />
 
