@@ -8,6 +8,7 @@ import { JournalSection } from "@/components/JournalSection";
 import { JourneyIntroSection } from "@/components/JourneyIntroSection";
 import { JourneySection } from "@/components/JourneySection";
 import { BootSection } from "@/components/BootSection";
+import { ContactSection } from "@/components/ContactSection";
 
 export default function HomeClient() {
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,7 @@ export default function HomeClient() {
           <JourneyIntroSection />
           <JourneySection />
           <BootSection />
+          <ContactSection />
         </div>
       )}
     </main>
