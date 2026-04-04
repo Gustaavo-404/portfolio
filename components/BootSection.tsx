@@ -395,18 +395,6 @@ export const BootSection = () => {
             opacity: Math.min(1, pipP * 1.4),
             pointerEvents: pipP >= 1 ? "auto" : "none",
           });
-        } else if (p >= P_CLOSE_START) {
-          // Pip-boy closing: inset grows back + opacity drops
-          gsap.set(textRef.current, { autoAlpha: 0, pointerEvents: "none" });
-          const closeP = (p - P_CLOSE_START) / (P_CLOSE_END - P_CLOSE_START);
-          const ce = closeP * closeP * (3 - 2 * closeP); // smoothstep
-          gsap.set(pipboyRef.current, {
-            clipPath: `inset(${50 * ce}% 0 ${50 * ce}% 0)`,
-            opacity: 1 - ce,
-            pointerEvents: "none",
-          });
-        } else {
-          gsap.set(pipboyRef.current, { clipPath: "inset(50% 0 50% 0)", opacity: 0, pointerEvents: "none" });
         }
 
         // ── Bars ──
