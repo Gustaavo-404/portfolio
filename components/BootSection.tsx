@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./BootSection.module.css";
@@ -28,6 +28,8 @@ type Project = {
   result: string;
   repoUrl: string;
   videoUrl: string;
+  repoAvailable?: boolean;
+  videoAvailable?: boolean;
 };
 
 const PROJECTS: Project[] = [
@@ -40,8 +42,8 @@ const PROJECTS: Project[] = [
     problem: "Raw GitHub data is fragmented across repos — devs lack a single surface to read signals and act on them.",
     result: "High-end SaaS analytics platform with GitHub OAuth, delivering a full dashboard for repo metrics, stars, forks, open issues, and commit history at a glance.",
     description: "Full-stack dashboard for GitHub repositories. Visualizes commit history and branch structures through interactive D3 graph rendering.",
-    repoUrl: "https://github.com/",
-    videoUrl: "https://youtube.com/",
+    repoUrl: "https://github.com/Gustaavo-404/gitgraph",
+    videoUrl: "https://youtu.be/zlDLipwbL3g",
   },
   {
     name: "AlphaWeb",
@@ -53,7 +55,8 @@ const PROJECTS: Project[] = [
     result: "A chatbot library platform that reduces creation to a form — name, dataset, prompt, category — abstracting all model complexity behind a clean UI.",
     description: "Full-stack platform for building and managing AI chatbots via form-based configuration. Multi-model LLM support with a public chatbot library.",
     repoUrl: "https://github.com/",
-    videoUrl: "https://youtube.com/",
+    videoUrl: "https://youtu.be/tQpCruAGaR4",
+    repoAvailable: false,
   },
   {
     name: "ExpertInvest",
@@ -64,8 +67,8 @@ const PROJECTS: Project[] = [
     problem: "Portfolio allocation is usually driven by intuition rather than mathematics, leading to suboptimal risk/return ratios.",
     result: "Optimization engine powered by the Simplex method — input assets and constraints, get the mathematically optimal allocation with interactive charts.",
     description: "Full-stack investment optimization platform implementing portfolio allocation via the Simplex method through PuLP.",
-    repoUrl: "https://github.com/",
-    videoUrl: "https://youtube.com/",
+    repoUrl: "https://github.com/Gustaavo-404/expertinvest",
+    videoUrl: "https://youtu.be/89HojXqSapk",
   },
   {
     name: "HealthTrack",
@@ -76,8 +79,8 @@ const PROJECTS: Project[] = [
     problem: "Generic fitness apps ignore individual biometrics, delivering one-size-fits-all advice that fails most users.",
     result: "Health platform generating personalized daily targets — hydration, sleep, diet — based on user profile, with a Duolingo-style streak system to drive daily engagement.",
     description: "Full-stack health monitoring platform tracking BMI, BMR, and body composition with personalized goal setting and daily streak mechanics.",
-    repoUrl: "https://github.com/",
-    videoUrl: "https://youtube.com/",
+    repoUrl: "https://github.com/Gustaavo-404/healthtrack",
+    videoUrl: "https://youtu.be/z2zL9pH_1cA",
   },
   {
     name: "Old Portfolio",
@@ -89,7 +92,8 @@ const PROJECTS: Project[] = [
     result: "Archived as a reference point — performance lessons learned here drove the architecture decisions behind the current, more resilient build.",
     description: "First portfolio iteration with a cyberpunk theme. Archived after performance constraints required a ground-up rebuild.",
     repoUrl: "https://github.com/",
-    videoUrl: "https://youtube.com/",
+    videoUrl: "https://youtu.be/H4r3vkOyJ64",
+    repoAvailable: false,
   },
   {
     name: "Retail Chatbot",
@@ -100,72 +104,135 @@ const PROJECTS: Project[] = [
     problem: "Retail support bots rely on rigid keyword trees, failing when customers phrase queries naturally.",
     result: "RAG-powered conversational webhook on Blip — embedding-based product search lets the bot answer free-form queries like 'do you have a tank top?' with real catalogue data.",
     description: "Conversational RAG chatbot webhook integrated with the Blip platform, serving as AI assistant for a fictional retail store.",
-    repoUrl: "https://github.com/",
-    videoUrl: "https://youtube.com/",
+    repoUrl: "https://github.com/Gustaavo-404/blip-llm-webhook-bot",
+    videoUrl: "https://youtu.be/65cU-onvC8w",
   },
 ];
 
-// Glitch chars pool — reduzido para animação mais sutil
-const GLITCH_CHARS = "▓░▒█▄▀■□◆◇○●";
-
 export const BootSection = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const noiseRef = useRef<HTMLDivElement>(null);
-  const scanlinesRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const spriteRef = useRef<HTMLDivElement>(null);
-  const pipboyRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLImageElement>(null);
-  const spriteWrapRef = useRef<HTMLDivElement>(null);
-  const centerInnerRef = useRef<HTMLDivElement>(null);
-  const scanLineRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef     = useRef<HTMLElement>(null);
+  const textRef        = useRef<HTMLDivElement>(null);
+  const noiseRef       = useRef<HTMLDivElement>(null);
+  const scanlinesRef   = useRef<HTMLDivElement>(null);
+  const bgRef          = useRef<HTMLDivElement>(null);
+  const spriteRef      = useRef<HTMLDivElement>(null);
+  const pipboyRef      = useRef<HTMLDivElement>(null);
+  const logoRef        = useRef<HTMLImageElement>(null);
+  const spriteWrapRef  = useRef<HTMLDivElement>(null);
+  const centerInnerRef   = useRef<HTMLDivElement>(null);
+  const expandedBodyRef  = useRef<HTMLDivElement>(null);  // animates on project switch
+  const prevProjectRef   = useRef<string | null>(null);   // tracks last selected
 
-  // FIX: ref para controlar o logo swap sem race condition
-  const logoAnimRef = useRef<gsap.core.Tween[]>([]);
-  const currentHoverRef = useRef<string | null>(null);
+  const logoAnimRef      = useRef<gsap.core.Tween[]>([]);
+  const currentHoverRef  = useRef<string | null>(null);
 
-  const [hoveredProject, setHoveredProject] = useState<string | null>(null);
+  const [hoveredProject, setHoveredProject]   = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
-  const [pipVisible, setPipVisible] = useState(false);
 
   // Lightbox state
-  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen]   = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const lightboxImgRef = useRef<HTMLImageElement>(null);
 
-  const hoveredData = hoveredProject ? PROJECTS.find((p) => p.name === hoveredProject) ?? null : null;
+  const hoveredData  = hoveredProject  ? PROJECTS.find((p) => p.name === hoveredProject)  ?? null : null;
   const selectedData = selectedProject ? PROJECTS.find((p) => p.name === selectedProject) ?? null : null;
   const displayProject = hoveredData ?? selectedData;
 
-  const handleProjectClick = (name: string) => {
-    setSelectedProject((prev) => (prev === name ? null : name));
+  // Animate the expanded body out, then clear the selection
+  const closeExpanded = () => {
+    if (expandedBodyRef.current) {
+      gsap.to(expandedBodyRef.current, {
+        y: -16, opacity: 0, duration: 0.18, ease: "power2.in",
+        onComplete: () => {
+          setSelectedProject(null);
+          gsap.set(expandedBodyRef.current, { y: 0, opacity: 1 });
+        },
+      });
+    } else {
+      setSelectedProject(null);
+    }
   };
 
-  // FIX: Logo swap com cancelamento correto de animações pendentes
+  const handleProjectClick = (name: string) => {
+    setSelectedProject((prev) => {
+      if (prev === name) {
+        // Toggle off
+        prevProjectRef.current = null;
+        return null;
+      }
+
+      if (prev !== null && expandedBodyRef.current) {
+        // Already open — slide out current, then swap state + slide in new
+        const fromIdx = PROJECTS.findIndex((p) => p.name === prev);
+        const toIdx   = PROJECTS.findIndex((p) => p.name === name);
+        const dir     = toIdx > fromIdx ? 1 : -1; // 1 = slide left, -1 = slide right
+
+        gsap.to(expandedBodyRef.current, {
+          x: -dir * 48,
+          opacity: 0,
+          duration: 0.18,
+          ease: "power2.in",
+          onComplete: () => {
+            prevProjectRef.current = name;
+            setSelectedProject(name);
+            // Slide in from opposite side
+            gsap.fromTo(
+              expandedBodyRef.current,
+              { x: dir * 48, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.22, ease: "power3.out" }
+            );
+          },
+        });
+        return prev; // hold current while animating out
+      }
+
+      prevProjectRef.current = name;
+      return name;
+    });
+  };
+
+  // ── Lightbox helpers ──
+  const openLightbox = useCallback((index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  }, []);
+
+  const closeLightbox = useCallback(() => setLightboxOpen(false), []);
+
+  const navigateLightbox = useCallback((dir: 1 | -1) => {
+    if (!selectedData) return;
+    const total = selectedData.screenshots.length;
+    setLightboxIndex((prev) => {
+      const next = (prev + dir + total) % total;
+      // Crossfade the image
+      if (lightboxImgRef.current) {
+        gsap.fromTo(lightboxImgRef.current,
+          { opacity: 0, x: dir * 20 },
+          { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" }
+        );
+      }
+      return next;
+    });
+  }, [selectedData]);
+
+  // ── Logo swap ──
   useEffect(() => {
     if (!logoRef.current || !spriteWrapRef.current) return;
-
-    // Cancela tweens anteriores
     logoAnimRef.current.forEach((t) => t.kill());
     logoAnimRef.current = [];
 
     if (displayProject) {
       logoRef.current.src = displayProject.logo;
       const t1 = gsap.to(spriteWrapRef.current, { opacity: 0, duration: 0.15, ease: "power2.out" });
-      const t2 = gsap.fromTo(
-        logoRef.current,
-        { opacity: 0, scale: 0.9, y: 4 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.25, ease: "power3.out" }
+      const t2 = gsap.fromTo(logoRef.current,
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }
       );
       logoAnimRef.current = [t1, t2];
     } else {
-      // Garante que a logo some ANTES de mostrar o sprite
       const t1 = gsap.to(logoRef.current, {
-        opacity: 0,
-        scale: 0.92,
-        duration: 0.15,
-        ease: "power2.in",
+        opacity: 0, scale: 0.92, duration: 0.15, ease: "power2.in",
         onComplete: () => {
-          // Só mostra o sprite depois que a logo sumiu completamente
           if (!currentHoverRef.current) {
             const t2 = gsap.to(spriteWrapRef.current, { opacity: 1, duration: 0.2, ease: "power2.out" });
             logoAnimRef.current.push(t2);
@@ -176,242 +243,173 @@ export const BootSection = () => {
     }
   }, [displayProject]);
 
-  // Atualiza ref de hover para uso no callback de onComplete
-  useEffect(() => {
-    currentHoverRef.current = hoveredProject;
-  }, [hoveredProject]);
+  useEffect(() => { currentHoverRef.current = hoveredProject; }, [hoveredProject]);
 
-  // Expand center for selected
+  // ── Expand center ──
   useEffect(() => {
     if (!centerInnerRef.current) return;
-    if (selectedData) {
-      gsap.to(centerInnerRef.current, { maxWidth: "780px", duration: 0.45, ease: "power3.inOut" });
-    } else {
-      gsap.to(centerInnerRef.current, { maxWidth: "480px", duration: 0.35, ease: "power3.inOut" });
-    }
+    gsap.to(centerInnerRef.current, {
+      maxWidth: selectedData ? "780px" : "480px",
+      duration: 0.42, ease: "power3.inOut",
+    });
   }, [selectedData]);
 
-  // Escape to deselect / close lightbox
+  // ── Keyboard ──
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (lightboxSrc) {
-          setLightboxSrc(null);
-        } else {
-          setSelectedProject(null);
-        }
+      if (lightboxOpen) {
+        if (e.key === "Escape")      closeLightbox();
+        if (e.key === "ArrowRight")  navigateLightbox(1);
+        if (e.key === "ArrowLeft")   navigateLightbox(-1);
+      } else {
+        if (e.key === "Escape") closeExpanded();
       }
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
-  }, [lightboxSrc]);
+  }, [lightboxOpen, closeLightbox, navigateLightbox]);
 
-  // ── Main scroll / animation setup ──────────────────────────────
+  // ── Main GSAP setup ──
   useEffect(() => {
     if (!sectionRef.current || !textRef.current) return;
 
-    gsap.set(textRef.current, { autoAlpha: 0, zIndex: 40, pointerEvents: "none" });
+    gsap.set(textRef.current,  { autoAlpha: 0, zIndex: 40, pointerEvents: "none" });
     gsap.set(pipboyRef.current, { clipPath: "inset(50% 0 50% 0)", opacity: 0, pointerEvents: "none" });
 
     const heroNoise = document.querySelector('[class*="noise-overlay"]');
 
-    // Hero noise toggle
     ScrollTrigger.create({
       trigger: sectionRef.current,
-      start: "top top",
-      end: "bottom top",
-      onEnter: () => gsap.to(heroNoise, { autoAlpha: 0, duration: 0.4 }),
+      start: "top top", end: "bottom top",
+      onEnter:     () => gsap.to(heroNoise, { autoAlpha: 0, duration: 0.4 }),
       onEnterBack: () => gsap.to(heroNoise, { autoAlpha: 0, duration: 0.4 }),
       onLeaveBack: () => gsap.to(heroNoise, { autoAlpha: 1, duration: 0.4 }),
     });
 
-    // Pin + background transition
     ScrollTrigger.create({
       trigger: sectionRef.current,
-      start: "top top",
-      end: "+=3200",
-      scrub: 0.3,
-      pin: sectionRef.current,
-      pinSpacing: true,
+      start: "top top", end: "+=3200",
+      scrub: 0.3, pin: sectionRef.current, pinSpacing: true,
       onUpdate: (self) => {
         const p = self.progress;
         if (p < 0.15) {
           gsap.set(bgRef.current, { backgroundColor: "#000000" });
-          gsap.to(noiseRef.current, { autoAlpha: 1, duration: 0.1 });
+          gsap.to(noiseRef.current,    { autoAlpha: 1, duration: 0.1 });
           gsap.to(scanlinesRef.current, { autoAlpha: 1, duration: 0.1 });
-        } else if (p >= 0.15 && p < 0.38) {
+        } else if (p < 0.38) {
           const t = (p - 0.15) / 0.23;
-          gsap.to(bgRef.current, { backgroundColor: "#041f14", duration: 0.1 });
-          gsap.to(noiseRef.current, { autoAlpha: 1 - t, duration: 0.1 });
+          gsap.to(bgRef.current,       { backgroundColor: "#041f14", duration: 0.1 });
+          gsap.to(noiseRef.current,    { autoAlpha: 1 - t, duration: 0.1 });
           gsap.to(scanlinesRef.current, { autoAlpha: 1 - t, duration: 0.1 });
-        } else if (p >= 0.38) {
-          gsap.to(bgRef.current, { backgroundColor: "#020f08", duration: 0.2 });
-          gsap.to(noiseRef.current, { autoAlpha: 0, duration: 0.2 });
+        } else {
+          gsap.to(bgRef.current,       { backgroundColor: "#020f08", duration: 0.2 });
+          gsap.to(noiseRef.current,    { autoAlpha: 0, duration: 0.2 });
           gsap.to(scanlinesRef.current, { autoAlpha: 0, duration: 0.2 });
         }
       },
     });
 
-    // ── "CONNECTION FOUND" — modelo 100% determinístico ──
-    //
-    // Regra de ouro: o estado de cada char deve ser uma FUNÇÃO PURA de `p`.
-    // Zero setInterval, zero one-shot flags — qualquer valor de p (scroll
-    // lento, rápido, de volta) produz exatamente o mesmo visual.
-    // O "glitch" é implementado como noise deterministico por índice: cada
-    // char tem uma seed fixa e o conteúdo é calculado a partir do progresso
-    // local do char, sem async.
-
+    // ── CONNECTION FOUND — simplified, smooth, no glow ────────────
+    // Approach: chars fade + slide in staggered by scroll progress.
+    // No glitch chars, no setInterval, fully deterministic.
     const TARGET = "CONNECTION FOUND";
-
-    // Tabela de seeds por char (fixa, gerada uma vez)
-    const CHAR_SEEDS = TARGET.split("").filter(c => c !== " ").map(() => Math.random());
-
     let ci = 0;
     textRef.current.innerHTML = TARGET.split("")
       .map((ch) => {
         if (ch === " ") return `<span class="${styles.space}">&nbsp;</span>`;
-        const idx = ci++;
-        return `<span class="${styles.char}" data-final="${ch}" data-idx="${idx}">${ch}</span>`;
+        return `<span class="${styles.char}" data-idx="${ci++}">${ch}</span>`;
       })
       .join("");
 
     const chars = Array.from(textRef.current.querySelectorAll<HTMLElement>(`.${styles.char}`));
-    gsap.set(chars, { opacity: 0, y: 0 });
+    gsap.set(chars, { opacity: 0, y: 18 });
 
-    // Scanline element
-    const scanEl = document.createElement("div");
-    scanEl.className = styles.termScanline;
-    textRef.current.appendChild(scanEl);
-    scanLineRef.current = scanEl;
-    gsap.set(scanEl, { scaleX: 0, opacity: 0 });
-
-    // Faixas de progresso (todas baseadas em p, sem estado externo)
-    const P_SCAN_START  = 0.04;
-    const P_REVEAL_START = 0.06;
-    const P_REVEAL_END   = 0.42;  // todos os chars garantidamente visíveis aqui
-    const P_EXIT_START   = 0.52;
-    const P_EXIT_END     = 0.64;
+    const P_REVEAL_START = 0.05;
+    const P_REVEAL_END   = 0.40;
+    const P_HOLD_END     = 0.52;
+    const P_EXIT_END     = 0.63;
     const P_PIP_END      = 0.78;
-
-    // Glitch lookup deterministico: dado um progresso local (0→1) e uma seed,
-    // retorna o char final OU um símbolo de glitch. Acima de glitchThreshold
-    // (0.55) sempre retorna o char final — garantindo que chars estabilizem.
-    const getCharAt = (final: string, localP: number, seed: number): string => {
-      if (localP >= 0.55) return final;
-      // Janela de glitch: 0→0.55. Usa noise periódico para parecer aleatório
-      // mas ser determinístico: sin(seed*100 + localP*30)
-      const noise = (Math.sin(seed * 100 + localP * 30) + 1) / 2;
-      if (noise > 0.45) return final;
-      return GLITCH_CHARS[Math.floor(noise * GLITCH_CHARS.length)];
-    };
-
-    // Scanline: animada uma só vez via GSAP (não depende de scroll depois)
-    let scanFired = false;
 
     ScrollTrigger.create({
       trigger: sectionRef.current,
-      start: "top top",
-      end: "+=3200",
-      scrub: 0.6,
+      start: "top top", end: "+=3200",
+      scrub: 0.5,
       onUpdate: (self) => {
         const p = self.progress;
 
-        // ── Scanline (dispara uma vez ao entrar, reseta ao sair) ──
-        if (p >= P_SCAN_START && !scanFired) {
-          scanFired = true;
-          gsap.to(textRef.current, { autoAlpha: 1, duration: 0.01 });
-          gsap.fromTo(scanEl,
-            { scaleX: 0, opacity: 0.6 },
-            { scaleX: 1, opacity: 0.6, duration: 0.45, ease: "power2.inOut",
-              onComplete: () => { gsap.to(scanEl, { opacity: 0, duration: 0.35 }); } }
-          );
-        }
-        if (p < P_SCAN_START && scanFired) {
-          scanFired = false;
-          gsap.set(scanEl, { scaleX: 0, opacity: 0 });
-        }
+        // ── Reveal: each char fades + slides in as scroll progresses ──
+        if (p >= P_REVEAL_START && p < P_HOLD_END) {
+          gsap.set(textRef.current, { autoAlpha: 1, y: 0, scale: 1, opacity: 1 });
+          const range = P_REVEAL_END - P_REVEAL_START;
 
-        // ── Phase 1 + 2: reveal + hold ──
-        // Abaixo de EXIT_START: calculamos o estado de cada char
-        // puramente a partir de p. Não há setInterval nem flags.
-        if (p >= P_REVEAL_START && p < P_EXIT_START) {
-          gsap.set(textRef.current, { autoAlpha: 1, opacity: 1, scale: 1, y: 0, letterSpacing: "0.18em" });
-
-          const revealRange = P_REVEAL_END - P_REVEAL_START;
-
-          chars.forEach((char, i) => {
-            const final = char.dataset.final ?? "";
-            const seed  = CHAR_SEEDS[i] ?? 0.5;
-
-            // Threshold: quando este char começa a aparecer
-            const charStart = P_REVEAL_START + (i / chars.length) * revealRange;
-            // Janela de transição de cada char (0.06 de p = ~6% do scroll total)
-            const charWindow = 0.06;
-            const charEnd    = charStart + charWindow;
-
-            if (p < charStart) {
-              // Ainda não chegou
-              gsap.set(char, { opacity: 0, y: 5 });
-              char.textContent = final;
-              return;
-            }
-
-            // Progresso local deste char: 0 → 1
-            const localP = Math.min(1, (p - charStart) / charWindow);
-
-            // Conteúdo: glitch deterministico → final
-            char.textContent = getCharAt(final, localP, seed);
-
-            // Opacidade e y: fade in suave
-            gsap.set(char, {
-              opacity: Math.min(1, localP * 2),   // sobe rápido até 1
-              y: (1 - localP) * 5,
+          chars.forEach((ch, i) => {
+            // Each char has its own threshold staggered across the reveal range
+            const threshold = P_REVEAL_START + (i / chars.length) * range;
+            const localP    = Math.min(1, Math.max(0, (p - threshold) / 0.08));
+            gsap.set(ch, {
+              opacity: localP,
+              y: (1 - localP) * 18,
             });
           });
         }
 
-        // ── Força o estado final de todos os chars quando p >= REVEAL_END ──
-        // Isso garante que mesmo com scroll ultra-rápido, nenhum char fica
-        // preso em símbolo ao entrar na fase de saída ou pip-boy.
-        if (p >= P_REVEAL_END && p < P_EXIT_START) {
-          chars.forEach((char) => {
-            char.textContent = char.dataset.final ?? "";
-            gsap.set(char, { opacity: 1, y: 0 });
-          });
-          gsap.set(textRef.current, { autoAlpha: 1, opacity: 1, scale: 1, y: 0, letterSpacing: "0.18em" });
+        // ── Hold: all chars fully visible ──
+        if (p >= P_REVEAL_END && p < P_HOLD_END) {
+          chars.forEach((ch) => gsap.set(ch, { opacity: 1, y: 0 }));
         }
 
-        // ── Phase 3: saída — fade + scale suave ──
-        if (p >= P_EXIT_START && p < P_EXIT_END) {
-          // Garante chars corretos antes de sair
-          chars.forEach((char) => { char.textContent = char.dataset.final ?? ""; });
+        // ── Exit: chars shake + flicker, whole text fades up ──
+        if (p >= P_HOLD_END && p < P_EXIT_END) {
+          const exit = (p - P_HOLD_END) / (P_EXIT_END - P_HOLD_END);
+          const e    = exit * exit * (3 - 2 * exit); // smoothstep
 
-          const exit = (p - P_EXIT_START) / (P_EXIT_END - P_EXIT_START);
+          // Per-char deterministic shake + flicker.
+          // sin/cos with char index as seed and p as time — fully scrub-safe.
+          const intensity = exit * exit; // ramps up toward end
+          chars.forEach((ch, i) => {
+            const seed   = i * 1.7;
+            const noiseX = Math.sin(seed + p * 80) * 5 * intensity;
+            const noiseY = Math.cos(seed * 0.9 + p * 60) * 4 * intensity;
+            // Each char flickers at its own phase
+            const flicker = Math.sin(seed * 3.1 + p * 140) > (0.4 - intensity * 0.8)
+              ? 1
+              : Math.max(0, 1 - intensity * 1.2);
+            gsap.set(ch, { x: noiseX, y: noiseY, opacity: flicker });
+          });
+
           gsap.set(textRef.current, {
-            autoAlpha: 1 - exit,
-            opacity: 1 - exit,
-            scale: 1 + exit * 0.04,
-            y: -exit * (window.innerHeight / 14),
-            letterSpacing: `${0.18 + exit * 0.06}em`,
+            autoAlpha: 1 - e * 0.85,
+            y: -e * (typeof window !== "undefined" ? window.innerHeight / 10 : 80),
+            scale: 1 + e * 0.03,
           });
         }
 
-        // ── Phase 4: pip-boy reveal ──
-        if (p >= P_EXIT_END) {
+        // ── Pip-boy reveal ──
+        const P_CLOSE_START = 0.88;
+        const P_CLOSE_END   = 0.97;
+        if (p >= P_EXIT_END && p < P_CLOSE_START) {
           gsap.set(textRef.current, { autoAlpha: 0, pointerEvents: "none" });
-
           const pipP = Math.min(1, (p - P_EXIT_END) / (P_PIP_END - P_EXIT_END));
           gsap.set(pipboyRef.current, {
             clipPath: `inset(${50 * (1 - pipP)}% 0 ${50 * (1 - pipP)}% 0)`,
-            opacity: Math.min(1, pipP * 1.5),
+            opacity: Math.min(1, pipP * 1.4),
             pointerEvents: pipP >= 1 ? "auto" : "none",
           });
-          if (pipP >= 1 && !pipVisible) setPipVisible(true);
+        } else if (p >= P_CLOSE_START) {
+          // Pip-boy closing: inset grows back + opacity drops
+          gsap.set(textRef.current, { autoAlpha: 0, pointerEvents: "none" });
+          const closeP = (p - P_CLOSE_START) / (P_CLOSE_END - P_CLOSE_START);
+          const ce = closeP * closeP * (3 - 2 * closeP); // smoothstep
+          gsap.set(pipboyRef.current, {
+            clipPath: `inset(${50 * ce}% 0 ${50 * ce}% 0)`,
+            opacity: 1 - ce,
+            pointerEvents: "none",
+          });
         } else {
           gsap.set(pipboyRef.current, { clipPath: "inset(50% 0 50% 0)", opacity: 0, pointerEvents: "none" });
         }
 
-        // ── Bars fill in ──
+        // ── Bars ──
         if (p >= 0.78) {
           document.querySelectorAll(`.${styles.fill}`).forEach((el) => { (el as HTMLElement).style.width = "100%"; });
           const targets = ["78%", "92%", "65%"];
@@ -420,20 +418,15 @@ export const BootSection = () => {
           });
         }
 
-        // ── Reset completo ao voltar ao início ──
+        // ── Reset ──
         if (p < 0.03) {
-          scanFired = false;
-          gsap.set(textRef.current, { autoAlpha: 0, opacity: 1, scale: 1, y: 0, letterSpacing: "0.18em" });
-          gsap.set(scanEl, { scaleX: 0, opacity: 0 });
-          chars.forEach((ch) => {
-            ch.textContent = ch.dataset.final ?? "";
-            gsap.set(ch, { opacity: 0, y: 0 });
-          });
+          gsap.set(textRef.current, { autoAlpha: 0, y: 0, scale: 1, opacity: 1 });
+          chars.forEach((ch) => gsap.set(ch, { opacity: 0, y: 18, x: 0 }));
         }
       },
     });
 
-    // ── Sprite animation ────────────────────────────────────────
+    // ── Sprite ────────────────────────────────────────────────────
     if (spriteRef.current) {
       let frame = 0, lastTime = 0;
       const interval = 1000 / 25;
@@ -453,13 +446,6 @@ export const BootSection = () => {
     }
 
     return () => {
-      if (scanLineRef.current) {
-        gsap.killTweensOf(scanLineRef.current);
-        scanLineRef.current.remove();
-        scanLineRef.current = null;
-      }
-      if (textRef.current) gsap.killTweensOf(textRef.current);
-      if (pipboyRef.current) gsap.killTweensOf(pipboyRef.current);
       ScrollTrigger.getAll().forEach((st) => {
         if (st.vars.trigger === sectionRef.current) st.kill();
       });
@@ -474,25 +460,70 @@ export const BootSection = () => {
       <div ref={scanlinesRef} className="absolute inset-0 pointer-events-none z-30"
         style={{ background: "repeating-linear-gradient(to bottom,rgba(0,0,0,0.2) 0px,rgba(0,0,0,0.2) 1px,transparent 2px,transparent 4px)" }} />
 
-      {/* CONNECTION FOUND text — usa classe .title do CSS global */}
+      {/* CONNECTION FOUND */}
       <div className="absolute inset-0 flex items-center justify-center z-40">
         <div ref={textRef} className={`${styles.terminal} title`} />
       </div>
 
-      {/* LIGHTBOX */}
-      {lightboxSrc && (
-        <div
-          className={styles.lightboxOverlay}
-          onClick={() => setLightboxSrc(null)}
-        >
-          <button className={styles.lightboxClose} onClick={() => setLightboxSrc(null)} aria-label="Fechar">✕</button>
+      {/* ── LIGHTBOX ── */}
+      {lightboxOpen && selectedData && (
+        <div className={styles.lightboxOverlay} onClick={closeLightbox}>
+          {/* Prev */}
+          <button
+            className={`${styles.lightboxArrow} ${styles.lightboxArrowLeft}`}
+            onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }}
+            aria-label="Previous"
+          >
+            ‹
+          </button>
+
+          {/* Image */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={lightboxSrc}
-            alt="Screenshot expandido"
+            ref={lightboxImgRef}
+            src={selectedData.screenshots[lightboxIndex]}
+            alt={`Screenshot ${lightboxIndex + 1}`}
             className={styles.lightboxImg}
             onClick={(e) => e.stopPropagation()}
           />
+
+          {/* Next */}
+          <button
+            className={`${styles.lightboxArrow} ${styles.lightboxArrowRight}`}
+            onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }}
+            aria-label="Next"
+          >
+            ›
+          </button>
+
+          {/* Counter + close */}
+          <div className={styles.lightboxMeta} onClick={(e) => e.stopPropagation()}>
+            <span className={styles.lightboxCounter}>
+              {String(lightboxIndex + 1).padStart(2, "0")} / {String(selectedData.screenshots.length).padStart(2, "0")}
+            </span>
+            <button className={styles.lightboxClose} onClick={closeLightbox} aria-label="Close">✕</button>
+          </div>
+
+          {/* Dot indicators */}
+          <div className={styles.lightboxDots} onClick={(e) => e.stopPropagation()}>
+            {selectedData.screenshots.map((_, i) => (
+              <button
+                key={i}
+                className={`${styles.lightboxDot} ${i === lightboxIndex ? styles.lightboxDotActive : ""}`}
+                onClick={() => {
+                  const dir = i > lightboxIndex ? 1 : -1;
+                  setLightboxIndex(i);
+                  if (lightboxImgRef.current) {
+                    gsap.fromTo(lightboxImgRef.current,
+                      { opacity: 0, x: dir * 20 },
+                      { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" }
+                    );
+                  }
+                }}
+                aria-label={`Screenshot ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
       )}
 
@@ -500,22 +531,6 @@ export const BootSection = () => {
       <div ref={pipboyRef} className={`${styles.pipBoyOverlay} pipboy-ui`}>
         <div className={styles.gridLines} />
         <div className={styles.vignette} />
-
-        {/* HEADER */}
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <span className={styles.tab}>STATS</span>
-            <span className={styles.tabActive}>INV</span>
-            <span className={styles.tab}>DATA</span>
-            <span className={styles.tab}>MAP</span>
-            <span className={styles.tab}>RADIO</span>
-          </div>
-          <div className={styles.headerRight}>
-            <span>RDY</span>
-            <span>LOC: SJRP-SP-111</span>
-            <span>2026</span>
-          </div>
-        </div>
 
         {/* MAIN */}
         <div className={styles.mainContent}>
@@ -567,19 +582,16 @@ export const BootSection = () => {
               <div className={`${styles.defaultView} ${selectedData ? styles.defaultViewHidden : ""}`}>
                 <div className={styles.spriteWrapper}>
                   <div className={styles.spriteFrame} />
-
                   <div ref={spriteWrapRef} className={styles.spriteAnimWrap}>
                     <div ref={spriteRef} className={styles.spriteEl}
                       style={{
-                        width: SPRITE_WIDTH,
-                        height: SPRITE_HEIGHT,
+                        width: SPRITE_WIDTH, height: SPRITE_HEIGHT,
                         backgroundImage: "url('/images/boot-sprite-sheet.png')",
                         backgroundRepeat: "no-repeat",
                         backgroundSize: `${SPRITE_COLS * SPRITE_WIDTH}px ${SPRITE_ROWS * SPRITE_HEIGHT}px`,
                       }}
                     />
                   </div>
-
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img ref={logoRef} src="" alt="" className={styles.projectLogo} style={{ opacity: 0 }} />
                 </div>
@@ -593,7 +605,7 @@ export const BootSection = () => {
               {/* Expanded / selected view */}
               <div className={`${styles.expandedView} ${selectedData ? styles.expandedViewVisible : ""}`}>
                 {selectedData && (
-                  <>
+                  <div ref={expandedBodyRef} className={styles.expandedBody}>
                     <div className={styles.expandedHeader}>
                       <div className={styles.expandedLogoWrap}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -608,16 +620,16 @@ export const BootSection = () => {
                           ))}
                         </div>
                       </div>
-                      <button className={styles.closeBtn} onClick={() => setSelectedProject(null)} aria-label="Close">✕</button>
+                      <button className={styles.closeBtn} onClick={closeExpanded} aria-label="Close">✕</button>
                     </div>
 
+                    {/* Screenshots with lightbox trigger */}
                     <div className={styles.screenshotsGrid}>
                       {selectedData.screenshots.map((src, i) => (
                         <div
                           key={i}
                           className={styles.screenshotWrap}
-                          onClick={() => setLightboxSrc(src)}
-                          title="Clique para expandir"
+                          onClick={() => openLightbox(i)}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={src} alt={`screenshot ${i + 1}`} className={styles.screenshot} />
@@ -639,14 +651,26 @@ export const BootSection = () => {
                     </div>
 
                     <div className={styles.ctaRow}>
-                      <a href={selectedData.repoUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaBtn}>
-                        <span className={styles.ctaBtnIcon}>⌥</span> REPOSITORY
-                      </a>
-                      <a href={selectedData.videoUrl} target="_blank" rel="noopener noreferrer" className={`${styles.ctaBtn} ${styles.ctaBtnAlt}`}>
-                        <span className={styles.ctaBtnIcon}>▶</span> DEMO VIDEO
-                      </a>
+                      {selectedData.repoAvailable === false ? (
+                        <span className={`${styles.ctaBtn} ${styles.ctaBtnUnavailable}`}>
+                          <span className={styles.ctaBtnIcon}>⊘</span> UNAVAILABLE
+                        </span>
+                      ) : (
+                        <a href={selectedData.repoUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaBtn}>
+                          <span className={styles.ctaBtnIcon}>⌥</span> REPOSITORY
+                        </a>
+                      )}
+                      {selectedData.videoAvailable === false ? (
+                        <span className={`${styles.ctaBtn} ${styles.ctaBtnAlt} ${styles.ctaBtnUnavailable}`}>
+                          <span className={styles.ctaBtnIcon}>⊘</span> UNAVAILABLE
+                        </span>
+                      ) : (
+                        <a href={selectedData.videoUrl} target="_blank" rel="noopener noreferrer" className={`${styles.ctaBtn} ${styles.ctaBtnAlt}`}>
+                          <span className={styles.ctaBtnIcon}>▶</span> DEMO VIDEO
+                        </a>
+                      )}
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
