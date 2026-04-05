@@ -1,15 +1,13 @@
 /* SPINNER */
 .spinner {
     animation: spin 20s linear infinite;
+    transform-origin: 50% 50%;
+    pointer-events: none;
 }
 
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-}
-
-.spinner:hover {
-    animation-play-state: paused;
 }
 
 .arc {
@@ -24,6 +22,19 @@
 
 .arc:hover {
     stroke-width: 8;
+}
+
+
+.arc {
+    pointer-events: stroke;
+}
+
+.arc:hover {
+    stroke-width: 8;
+}
+
+svg:has(.arc:hover) .spinner {
+    animation-play-state: paused;
 }
 
 .arc-text {

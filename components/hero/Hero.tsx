@@ -28,13 +28,13 @@ export default function Hero() {
 
       const tl = gsap.timeline();
 
-      // 1. Iris abre primeiro
+      // 1. Iris on
       tl.to(irisCircleRef.current, {
         attr: { r: "150%" },
         duration: 1.0,
         ease: "power2.inOut",
       })
-        // 2. Hero aparece
+        // 2. Hero
         .to(`.${styles["hero-wrapper"]}`, {
           opacity: 1,
           filter: "brightness(1.3) blur(0px)",
@@ -48,12 +48,12 @@ export default function Hero() {
           duration: 0.8,
           ease: "power2.in",
         }, "-=0.5")
-        // 4. Brilho normal
+        // 4. Brightness
         .to(`.${styles["hero-wrapper"]}`, {
           filter: "brightness(1)",
           duration: 0.4,
         })
-        // 5. Iris some
+        // 5. Iris off
         .to(irisOverlayRef.current, {
           opacity: 0,
           duration: 0.2,
@@ -119,7 +119,7 @@ export default function Hero() {
 
     const rand = (min: number, max: number) => Math.random() * (max - min) + min;
 
-    // ===== TIPOS =====
+    // ===== TYPES =====
     type Scratch = {
       x: number;
       segments: { y: number; dx: number }[];
@@ -148,7 +148,7 @@ export default function Hero() {
     const dusts: Dust[] = [];
     const hairlines: HairLine[] = [];
 
-    // ===== SCRATCH vertical segmentado =====
+    // ===== SCRATCH =====
     const spawnScratch = (w: number, h: number) => {
       const x = rand(0, w);
       const segCount = Math.floor(h / 8);
@@ -157,7 +157,6 @@ export default function Hero() {
         dx: rand(-1.5, 1.5),
       }));
 
-      // calcula y acumulado
       let cy = 0;
       for (const seg of segments) {
         seg.y = cy;
@@ -173,7 +172,7 @@ export default function Hero() {
       });
     };
 
-    // ===== DUST SPECK — grão de poeira que aparece e some =====
+    // ===== DUST SPECK =====
     const spawnDust = (w: number, h: number) => {
       const life = rand(6, 20);
       dusts.push({
@@ -186,7 +185,7 @@ export default function Hero() {
       });
     };
 
-    // ===== HAIRLINE — linha horizontal curta, artefato de película =====
+    // ===== HAIRLINE =====
     const spawnHairLine = (w: number, h: number) => {
       const life = rand(2, 6);
       hairlines.push({
@@ -200,7 +199,6 @@ export default function Hero() {
     let animationFrameId: number;
     let frameCount = 0;
 
-    // altura variável das hairlines ao longo do tempo
     let hairlineY = 0;
 
     const render = () => {
@@ -211,11 +209,11 @@ export default function Hero() {
       ctx2d.clearRect(0, 0, w, h);
 
       // ── SPAWN ──
-      // scratch: raro, aparece em rajadas ocasionais
+      // scratch
       if (Math.random() < 0.012) spawnScratch(w, h);
-      // dust: frequente, dá textura
+      // dust
       if (Math.random() < 0.15) spawnDust(w, h);
-      // hairline: bem raro
+      // hairline
       if (Math.random() < 0.006) {
         hairlineY = rand(0, h);
         spawnHairLine(w, h);
@@ -225,7 +223,6 @@ export default function Hero() {
       for (let i = scratches.length - 1; i >= 0; i--) {
         const s = scratches[i];
         const t = s.life / s.maxLife;
-        // fade in rápido, fade out lento
         const alpha = t < 0.3 ? t / 0.3 : t > 0.8 ? (1 - t) / 0.2 : 1;
 
         ctx2d.save();
@@ -258,7 +255,6 @@ export default function Hero() {
         ctx2d.save();
         ctx2d.globalAlpha = alpha * d.opacity;
 
-        // alterna entre branco (poeira clara) e preto (partícula escura)
         const isLight = Math.random() > 0.4;
         ctx2d.fillStyle = isLight ? "#ffffff" : "#1a1005";
 
@@ -267,7 +263,7 @@ export default function Hero() {
           d.x,
           d.y,
           d.r,
-          d.r * rand(0.6, 1.0), // levemente elíptico
+          d.r * rand(0.6, 1.0),
           rand(0, Math.PI),
           0,
           Math.PI * 2
@@ -279,7 +275,7 @@ export default function Hero() {
         if (d.life <= 0) dusts.splice(i, 1);
       }
 
-      // ── HAIRLINES horizontais ──
+      // ── HAIRLINES ──
       for (let i = hairlines.length - 1; i >= 0; i--) {
         const h_line = hairlines[i];
         const t = h_line.life / h_line.maxLife;
@@ -300,7 +296,7 @@ export default function Hero() {
         if (h_line.life <= 0) hairlines.splice(i, 1);
       }
 
-      // ── FLICKER DE EXPOSIÇÃO — vinheta quente ocasional ──
+      // ── FLICKER ──
       if (frameCount % 90 === 0 && Math.random() > 0.5) {
         const grad = ctx2d.createRadialGradient(
           w / 2, h / 2, h * 0.1,
@@ -360,34 +356,36 @@ export default function Hero() {
         {/* SVG */}
         <svg
           viewBox="0 0 100 100"
-          className={`absolute w-[1200px] h-[1200px] ${styles.spinner}`}
+          className="absolute w-[1200px] h-[1200px]"
         >
-          <defs>
-            {items.map((item, i) => (
-              <path
-                key={i}
-                id={item.id}
-                d="M 50,10 A 40,40 0 0,1 90,50"
-                transform={`rotate(${item.rotate} 50 50)`}
-              />
-            ))}
-          </defs>
+          <g className={styles.spinner}>
+            <defs>
+              {items.map((item, i) => (
+                <path
+                  key={i}
+                  id={item.id}
+                  d="M 50,10 A 40,40 0 0,1 90,50"
+                  transform={`rotate(${item.rotate} 50 50)`}
+                />
+              ))}
+            </defs>
 
-          {items.map((item, i) => (
-            <g key={i}>
-              <use href={`#${item.id}`} className={styles.arc} />
-              <text className={`${styles["arc-text"]} ${styles.title}`}>
-                <textPath
-                  href={`#${item.id}`}
-                  startOffset="50%"
-                  textAnchor="middle"
-                  dy={item.rotate === 0 || item.rotate === 90 ? 6 : -6}
-                >
-                  {item.label}
-                </textPath>
-              </text>
-            </g>
-          ))}
+            {items.map((item, i) => (
+              <g key={i}>
+                <use href={`#${item.id}`} className={styles.arc} />
+                <text className={`${styles["arc-text"]} ${styles.title}`}>
+                  <textPath
+                    href={`#${item.id}`}
+                    startOffset="50%"
+                    textAnchor="middle"
+                    dy={item.rotate === 0 || item.rotate === 90 ? 6 : -6}
+                  >
+                    {item.label}
+                  </textPath>
+                </text>
+              </g>
+            ))}
+          </g>
         </svg>
 
         {/* HERO IMAGE */}
