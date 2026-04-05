@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import SoundToggle from "@/components/SoundToggle";
 import styles from "./Hero.module.css";
@@ -13,9 +13,22 @@ export default function Hero() {
     { label: "STACK", rotate: 180, id: "arc3" },
     { label: "CONTACT", rotate: 270, id: "arc4" },
   ];
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const irisCircleRef = useRef<SVGCircleElement | null>(null);
   const irisOverlayRef = useRef<SVGSVGElement | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   useEffect(() => {
     // ================= GSAP =================
     const ctx = gsap.context(() => {
@@ -28,39 +41,46 @@ export default function Hero() {
 
       const tl = gsap.timeline();
 
-      // 1. Iris on
       tl.to(irisCircleRef.current, {
         attr: { r: "150%" },
         duration: 1.0,
         ease: "power2.inOut",
       })
-        // 2. Hero
-        .to(`.${styles["hero-wrapper"]}`, {
-          opacity: 1,
-          filter: "brightness(1.3) blur(0px)",
-          scale: 1,
-          duration: 1,
-          ease: "power2.out",
-        }, "-=0.5")
-        // 3. Burn overlay
-        .to(`.${styles["burn-overlay"]}`, {
-          opacity: 0,
-          duration: 0.8,
-          ease: "power2.in",
-        }, "-=0.5")
-        // 4. Brightness
+        .to(
+          `.${styles["hero-wrapper"]}`,
+          {
+            opacity: 1,
+            filter: "brightness(1.3) blur(0px)",
+            scale: 1,
+            duration: 1,
+            ease: "power2.out",
+          },
+          "-=0.5"
+        )
+        .to(
+          `.${styles["burn-overlay"]}`,
+          {
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.in",
+          },
+          "-=0.5"
+        )
         .to(`.${styles["hero-wrapper"]}`, {
           filter: "brightness(1)",
           duration: 0.4,
         })
-        // 5. Iris off
-        .to(irisOverlayRef.current, {
-          opacity: 0,
-          duration: 0.2,
-        }, "-=0.3");
+        .to(
+          irisOverlayRef.current,
+          {
+            opacity: 0,
+            duration: 0.2,
+          },
+          "-=0.3"
+        );
     });
 
-    // ================= MOUSE =================
+    // ================= MOUSE (desktop only) =================
     const wrapper = document.querySelector(
       `.${styles["hero-wrapper"]}`
     ) as HTMLElement | null;
@@ -71,35 +91,47 @@ export default function Hero() {
 
     let mouseX = 0;
     let mouseY = 0;
+    let ticker: (() => void) | null = null;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!wrapper || !mask) return;
+    if (!isMobile) {
+      const handleMouseMove = (e: MouseEvent) => {
+        if (!wrapper || !mask) return;
+        const rect = wrapper.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      };
 
-      const rect = wrapper.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
+      wrapper?.addEventListener("mousemove", handleMouseMove);
+
+      ticker = () => {
+        if (!mask) return;
+        const currentX =
+          parseFloat(getComputedStyle(mask).getPropertyValue("--x")) || 0;
+        const currentY =
+          parseFloat(getComputedStyle(mask).getPropertyValue("--y")) || 0;
+        const lerpX = currentX + (mouseX - currentX) * 0.15;
+        const lerpY = currentY + (mouseY - currentY) * 0.15;
+        mask.style.setProperty("--x", `${lerpX}px`);
+        mask.style.setProperty("--y", `${lerpY}px`);
+      };
+
+      gsap.ticker.add(ticker);
+
+      return () => {
+        ctx.revert();
+        wrapper?.removeEventListener("mousemove", handleMouseMove);
+        if (ticker) gsap.ticker.remove(ticker);
+      };
+    }
+
+    return () => {
+      ctx.revert();
+      if (ticker) gsap.ticker.remove(ticker);
     };
+  }, [isMobile]);
 
-    wrapper?.addEventListener("mousemove", handleMouseMove);
-
-    const ticker = () => {
-      if (!mask) return;
-
-      const currentX =
-        parseFloat(getComputedStyle(mask).getPropertyValue("--x")) || 0;
-      const currentY =
-        parseFloat(getComputedStyle(mask).getPropertyValue("--y")) || 0;
-
-      const lerpX = currentX + (mouseX - currentX) * 0.15;
-      const lerpY = currentY + (mouseY - currentY) * 0.15;
-
-      mask.style.setProperty("--x", `${lerpX}px`);
-      mask.style.setProperty("--y", `${lerpY}px`);
-    };
-
-    gsap.ticker.add(ticker);
-
-    // ================= CANVAS =================
+  // ================= CANVAS =================
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -117,9 +149,9 @@ export default function Hero() {
     resize();
     window.addEventListener("resize", resize);
 
-    const rand = (min: number, max: number) => Math.random() * (max - min) + min;
+    const rand = (min: number, max: number) =>
+      Math.random() * (max - min) + min;
 
-    // ===== TYPES =====
     type Scratch = {
       x: number;
       segments: { y: number; dx: number }[];
@@ -148,7 +180,6 @@ export default function Hero() {
     const dusts: Dust[] = [];
     const hairlines: HairLine[] = [];
 
-    // ===== SCRATCH =====
     const spawnScratch = (w: number, h: number) => {
       const x = rand(0, w);
       const segCount = Math.floor(h / 8);
@@ -156,13 +187,11 @@ export default function Hero() {
         y: 0,
         dx: rand(-1.5, 1.5),
       }));
-
       let cy = 0;
       for (const seg of segments) {
         seg.y = cy;
         cy += 8;
       }
-
       scratches.push({
         x,
         segments,
@@ -172,7 +201,6 @@ export default function Hero() {
       });
     };
 
-    // ===== DUST SPECK =====
     const spawnDust = (w: number, h: number) => {
       const life = rand(6, 20);
       dusts.push({
@@ -185,7 +213,6 @@ export default function Hero() {
       });
     };
 
-    // ===== HAIRLINE =====
     const spawnHairLine = (w: number, h: number) => {
       const life = rand(2, 6);
       hairlines.push({
@@ -198,39 +225,63 @@ export default function Hero() {
 
     let animationFrameId: number;
     let frameCount = 0;
-
     let hairlineY = 0;
 
-    const render = () => {
+    // Mobile: render much less frequently and with fewer effects
+    const renderMobile = () => {
       const w = canvas.width;
       const h = canvas.height;
       frameCount++;
 
       ctx2d.clearRect(0, 0, w, h);
 
-      // ── SPAWN ──
-      // scratch
+      // Very sparse dust only
+      if (Math.random() < 0.03) spawnDust(w, h);
+
+      for (let i = dusts.length - 1; i >= 0; i--) {
+        const d = dusts[i];
+        const t = d.life / d.maxLife;
+        const alpha = t < 0.2 ? t / 0.2 : t > 0.7 ? (1 - t) / 0.3 : 1;
+        ctx2d.save();
+        ctx2d.globalAlpha = alpha * d.opacity * 0.4;
+        ctx2d.fillStyle = "#ffffff";
+        ctx2d.beginPath();
+        ctx2d.arc(d.x, d.y, d.r * 0.7, 0, Math.PI * 2);
+        ctx2d.fill();
+        ctx2d.restore();
+        d.life--;
+        if (d.life <= 0) dusts.splice(i, 1);
+      }
+
+      // Skip frames on mobile — run at ~15fps instead of 60
+      animationFrameId = setTimeout(() => {
+        requestAnimationFrame(renderMobile);
+      }, 66) as unknown as number;
+    };
+
+    const renderDesktop = () => {
+      const w = canvas.width;
+      const h = canvas.height;
+      frameCount++;
+
+      ctx2d.clearRect(0, 0, w, h);
+
       if (Math.random() < 0.012) spawnScratch(w, h);
-      // dust
       if (Math.random() < 0.15) spawnDust(w, h);
-      // hairline
       if (Math.random() < 0.006) {
         hairlineY = rand(0, h);
         spawnHairLine(w, h);
       }
 
-      // ── SCRATCHES ──
       for (let i = scratches.length - 1; i >= 0; i--) {
         const s = scratches[i];
         const t = s.life / s.maxLife;
         const alpha = t < 0.3 ? t / 0.3 : t > 0.8 ? (1 - t) / 0.2 : 1;
-
         ctx2d.save();
         ctx2d.globalAlpha = alpha * 0.85;
         ctx2d.strokeStyle = Math.random() > 0.15 ? "#ffffff" : "#ffe8b0";
         ctx2d.lineWidth = s.width;
         ctx2d.lineCap = "round";
-
         ctx2d.beginPath();
         for (let j = 0; j < s.segments.length; j++) {
           const seg = s.segments[j];
@@ -241,23 +292,18 @@ export default function Hero() {
         }
         ctx2d.stroke();
         ctx2d.restore();
-
         s.life--;
         if (s.life <= 0) scratches.splice(i, 1);
       }
 
-      // ── DUST SPECKS ──
       for (let i = dusts.length - 1; i >= 0; i--) {
         const d = dusts[i];
         const t = d.life / d.maxLife;
         const alpha = t < 0.2 ? t / 0.2 : t > 0.7 ? (1 - t) / 0.3 : 1;
-
         ctx2d.save();
         ctx2d.globalAlpha = alpha * d.opacity;
-
         const isLight = Math.random() > 0.4;
         ctx2d.fillStyle = isLight ? "#ffffff" : "#1a1005";
-
         ctx2d.beginPath();
         ctx2d.ellipse(
           d.x,
@@ -270,37 +316,35 @@ export default function Hero() {
         );
         ctx2d.fill();
         ctx2d.restore();
-
         d.life--;
         if (d.life <= 0) dusts.splice(i, 1);
       }
 
-      // ── HAIRLINES ──
       for (let i = hairlines.length - 1; i >= 0; i--) {
         const h_line = hairlines[i];
         const t = h_line.life / h_line.maxLife;
         const alpha = t > 0.5 ? 1 : t / 0.5;
-
         ctx2d.save();
         ctx2d.globalAlpha = alpha * 0.5;
         ctx2d.strokeStyle = "#ffffff";
         ctx2d.lineWidth = 0.5;
-
         ctx2d.beginPath();
         ctx2d.moveTo(h_line.x, hairlineY);
         ctx2d.lineTo(h_line.x + h_line.width, hairlineY + rand(-1, 1));
         ctx2d.stroke();
         ctx2d.restore();
-
         h_line.life--;
         if (h_line.life <= 0) hairlines.splice(i, 1);
       }
 
-      // ── FLICKER ──
       if (frameCount % 90 === 0 && Math.random() > 0.5) {
         const grad = ctx2d.createRadialGradient(
-          w / 2, h / 2, h * 0.1,
-          w / 2, h / 2, h * 0.9
+          w / 2,
+          h / 2,
+          h * 0.1,
+          w / 2,
+          h / 2,
+          h * 0.9
         );
         grad.addColorStop(0, "rgba(255, 240, 180, 0.0)");
         grad.addColorStop(1, "rgba(255, 200, 80, 0.07)");
@@ -311,28 +355,36 @@ export default function Hero() {
         ctx2d.restore();
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      animationFrameId = requestAnimationFrame(renderDesktop);
     };
 
-    render();
+    const currentIsMobile = window.innerWidth < 768;
+    if (currentIsMobile) {
+      animationFrameId = requestAnimationFrame(renderMobile);
+    } else {
+      animationFrameId = requestAnimationFrame(renderDesktop);
+    }
 
-    // ================= CLEANUP =================
     return () => {
-      ctx.revert();
-      wrapper?.removeEventListener("mousemove", handleMouseMove);
-      gsap.ticker.remove(ticker);
-
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
+      clearTimeout(animationFrameId);
     };
   }, []);
 
   return (
     <section className="w-full h-screen flex items-center justify-center bg-white overflow-hidden relative">
-
+      {/* IRIS OVERLAY */}
       <svg
         ref={irisOverlayRef}
-        style={{ position: "fixed", inset: 0, width: "100%", height: "100%", zIndex: 9998, pointerEvents: "none" }}
+        style={{
+          position: "fixed",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 9998,
+          pointerEvents: "none",
+        }}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -347,115 +399,174 @@ export default function Hero() {
             />
           </mask>
         </defs>
-        <rect width="100%" height="100%" fill="black" mask="url(#iris-open-mask)" />
+        <rect
+          width="100%"
+          height="100%"
+          fill="black"
+          mask="url(#iris-open-mask)"
+        />
       </svg>
+
+      {/* ===== MOBILE HEADER ===== */}
+      {isMobile && (
+        <header className={styles["mobile-header"]}>
+          <div className={styles["mobile-header-inner"]}>
+            <span className={styles["mobile-logo"]}>PORTFOLIO</span>
+            <button
+              className={styles["mobile-menu-btn"]}
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              <span
+                className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-1"] : ""}`}
+              />
+              <span
+                className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-2"] : ""}`}
+              />
+              <span
+                className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-3"] : ""}`}
+              />
+            </button>
+          </div>
+
+          {/* Dropdown nav */}
+          <nav
+            className={`${styles["mobile-nav"]} ${mobileMenuOpen ? styles["mobile-nav--open"] : ""}`}
+          >
+            {items.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.label.toLowerCase()}`}
+                className={styles["mobile-nav-link"]}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </header>
+      )}
 
       <div className="relative flex items-center justify-center w-full h-full">
         <SoundToggle />
 
-        {/* SVG */}
-        <svg
-          viewBox="0 0 100 100"
-          className="absolute w-[1200px] h-[1200px]"
-        >
-          <g className={styles.spinner}>
-            <defs>
+        {/* ===== DESKTOP SPINNER ===== */}
+        {!isMobile && (
+          <svg
+            viewBox="0 0 100 100"
+            className={styles["spinner-svg"]}
+          >
+            <g className={styles.spinner}>
+              <defs>
+                {items.map((item, i) => (
+                  <path
+                    key={i}
+                    id={item.id}
+                    d="M 50,10 A 40,40 0 0,1 90,50"
+                    transform={`rotate(${item.rotate} 50 50)`}
+                  />
+                ))}
+              </defs>
+
               {items.map((item, i) => (
-                <path
-                  key={i}
-                  id={item.id}
-                  d="M 50,10 A 40,40 0 0,1 90,50"
-                  transform={`rotate(${item.rotate} 50 50)`}
-                />
+                <g key={i}>
+                  <use href={`#${item.id}`} className={styles.arc} />
+                  <text className={`${styles["arc-text"]} ${styles.title}`}>
+                    <textPath
+                      href={`#${item.id}`}
+                      startOffset="50%"
+                      textAnchor="middle"
+                      dy={
+                        item.rotate === 0 || item.rotate === 90 ? 6 : -6
+                      }
+                    >
+                      {item.label}
+                    </textPath>
+                  </text>
+                </g>
               ))}
-            </defs>
+            </g>
+          </svg>
+        )}
 
-            {items.map((item, i) => (
-              <g key={i}>
-                <use href={`#${item.id}`} className={styles.arc} />
-                <text className={`${styles["arc-text"]} ${styles.title}`}>
-                  <textPath
-                    href={`#${item.id}`}
-                    startOffset="50%"
-                    textAnchor="middle"
-                    dy={item.rotate === 0 || item.rotate === 90 ? 6 : -6}
-                  >
-                    {item.label}
-                  </textPath>
-                </text>
-              </g>
-            ))}
-          </g>
-        </svg>
-
-        {/* HERO IMAGE */}
+        {/* ===== HERO IMAGE ===== */}
         <div className={styles["hero-wrapper"]}>
-
           {/* BASE */}
           <div className={styles["image-layer"]}>
             <div className={styles.glitch}>
               <Image
                 src="/images/hero-portrait-nsg.png"
                 alt="portrait"
-                width={600}
-                height={800}
+                fill
                 className={styles.img}
                 priority
                 unoptimized
+                style={{ objectFit: "contain", objectPosition: "center" }}
               />
-              <Image
-                src="/images/hero-portrait-nsg.png"
-                alt=""
-                width={600}
-                height={800}
-                className={styles.glitchClone1}
-                unoptimized
-              />
-              <Image
-                src="/images/hero-portrait-nsg.png"
-                alt=""
-                width={600}
-                height={800}
-                className={styles.glitchClone2}
-                unoptimized
-              />
+              {!isMobile && (
+                <>
+                  <Image
+                    src="/images/hero-portrait-nsg.png"
+                    alt=""
+                    fill
+                    className={styles.glitchClone1}
+                    unoptimized
+                    style={{ objectFit: "contain" }}
+                  />
+                  <Image
+                    src="/images/hero-portrait-nsg.png"
+                    alt=""
+                    fill
+                    className={styles.glitchClone2}
+                    unoptimized
+                    style={{ objectFit: "contain" }}
+                  />
+                </>
+              )}
             </div>
           </div>
 
-          {/* SIGNATURE */}
-          <div className={`${styles["image-layer"]} ${styles["signature-mask"]}`}>
+          {/* SIGNATURE — on desktop via hover mask, on mobile always visible */}
+          <div
+            className={`${styles["image-layer"]} ${!isMobile ? styles["signature-mask"] : styles["signature-mobile"]}`}
+          >
             <div className={styles.glitch}>
               <Image
                 src="/images/hero-portrait-sg.png"
                 alt="portrait signed"
-                width={600}
-                height={800}
+                fill
                 className={styles.img}
                 priority
+                style={{ objectFit: "contain", objectPosition: "center" }}
               />
-              <Image
-                src="/images/hero-portrait-sg.png"
-                alt=""
-                width={600}
-                height={800}
-                className={styles.glitchClone1}
-              />
-              <Image
-                src="/images/hero-portrait-sg.png"
-                alt=""
-                width={600}
-                height={800}
-                className={styles.glitchClone2}
-              />
+              {!isMobile && (
+                <>
+                  <Image
+                    src="/images/hero-portrait-sg.png"
+                    alt=""
+                    fill
+                    className={styles.glitchClone1}
+                    style={{ objectFit: "contain" }}
+                  />
+                  <Image
+                    src="/images/hero-portrait-sg.png"
+                    alt=""
+                    fill
+                    className={styles.glitchClone2}
+                    style={{ objectFit: "contain" }}
+                  />
+                </>
+              )}
             </div>
           </div>
 
           <div className={styles["burn-overlay"]}></div>
         </div>
 
-
-        {/* NOISE */}
-        <div className={styles["noise-overlay"]}>
+        {/* NOISE — desktop full / mobile lite */}
+        <div
+          className={`${styles["noise-overlay"]} ${isMobile ? styles["noise-overlay--mobile"] : ""}`}
+        >
           <canvas className={styles["film-canvas"]} ref={canvasRef}></canvas>
         </div>
       </div>
