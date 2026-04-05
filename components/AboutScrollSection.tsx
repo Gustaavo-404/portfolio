@@ -142,11 +142,11 @@ export const AboutScrollSection = () => {
         {/* SCENE 2: ENGINEERING (THE CRAFT) */}
         <div className="scene-2 absolute hidden flex-col items-center text-center gap-12">
           <div className="flex gap-16 mb-2">
-            <div className="detail-item flex flex-col items-start border-l border-white/10 pl-6">
+            <div className="detail-item flex flex-col items-center text-center border-l border-white/10 pl-6">
               <span className="subtitle text-[9px] uppercase tracking-[0.2em] text-stone-300">Core Expertise</span>
               <span className="subtitle text-xs uppercase tracking-widest mt-1">Full Stack Systems</span>
             </div>
-            <div className="detail-item flex flex-col items-start border-l border-white/10 pl-6">
+            <div className="detail-item flex flex-col items-center text-center border-l border-white/10 pl-6">
               <span className="subtitle text-[9px] uppercase tracking-[0.2em] text-stone-300">Development</span>
               <span className="subtitle text-xs uppercase tracking-widest mt-1">Robust Architecture</span>
             </div>
