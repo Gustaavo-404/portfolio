@@ -319,27 +319,6 @@ export const JourneyIntroSection = () => {
         {/* LEFT — slot machine + timeline */}
         <div className="flex items-center justify-center w-1/2 h-full relative">
 
-          {/* Vertical timeline */}
-          <div
-            className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col items-center"
-            style={{ height: "340px" }}
-          >
-            <div className="relative w-px flex-1 bg-white/10 overflow-hidden">
-              <div
-                className="timeline-bar absolute top-0 left-0 right-0 bg-white/50"
-                style={{ height: "100%", transformOrigin: "top" }}
-              />
-            </div>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col justify-between h-full">
-              {[YEAR_START, ...yearStops, YEAR_END].map((yr) => (
-                <div key={yr} className="flex items-center gap-3">
-                  <span className="font-mono text-[9px] tracking-[0.25em] text-white/25 w-10 text-right">{yr}</span>
-                  <div className="progress-dot w-1.5 h-1.5 rounded-full bg-white/40 flex-shrink-0" />
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Slot machine year display */}
           <div className="flex flex-col items-start pl-16 md:pl-24">
             <span className="font-mono text-[9px] tracking-[0.7em] uppercase mb-3 text-white/25 block">
