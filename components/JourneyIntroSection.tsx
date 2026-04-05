@@ -15,15 +15,23 @@ const FLASHBACK_IMAGES = [
 
 const YEAR_START = 2026;
 const YEAR_END = 2019;
-const REWIND_DUR = 12;
 
-const RISE_DUR = 0.6;
-const HOLD_DUR = 0.5;
-const EXIT_DUR = 0.5;
+const TIMELINE_SEGMENT = 25;
+const INTRO_SEGMENT = TIMELINE_SEGMENT;
+const PHOTO_SEGMENT = TIMELINE_SEGMENT;
+const COUNTER_SEGMENT = TIMELINE_SEGMENT * 3;
 
-const PHOTO_INTERVAL =
-  (REWIND_DUR - (RISE_DUR + HOLD_DUR + EXIT_DUR)) / (FLASHBACK_IMAGES.length - 1);
-const START_TIMES = FLASHBACK_IMAGES.map((_, i) => i * PHOTO_INTERVAL);
+const INTRO_HOLD_DUR = 22.2;
+
+const RISE_DUR = 6;
+const HOLD_DUR = 13;
+const EXIT_DUR = 6;
+
+const PHOTO_TIMINGS = [
+  { start: 0, hold: HOLD_DUR },
+  { start: PHOTO_SEGMENT, hold: HOLD_DUR },
+  { start: PHOTO_SEGMENT * 2, hold: HOLD_DUR },
+];
 
 const ROTATIONS = [-2.2, 1.8, -3.0];
 // Each photo drifts in from a different horizontal offset
@@ -84,7 +92,7 @@ export const JourneyIntroSection = () => {
     const splitTitle = new SplitType(titleEl as HTMLElement, { types: "chars,words" });
     const splitSubtitle = new SplitType(subtitleEl as HTMLElement, { types: "chars" });
 
-    // ── Initial states ────────────────────────────────────────────
+    // ── Initial states ──
     gsap.set(".split-title .char", {
       opacity: 0, y: 20, rotateX: -90,
       filter: "blur(8px)", transformOrigin: "50% 50% -20px",
@@ -116,13 +124,13 @@ export const JourneyIntroSection = () => {
       scrollTrigger: {
         trigger: section,
         start: "top top",
-        end: "+=500%",
+        end: "+=950%",
         scrub: 1.2,
         pin: true,
       },
     });
 
-    // FASE A — intro reveal
+    // FASE A — intro reveal (25% do tempo total)
     tl
       .to(".frame-corner, .meta-ui", {
         opacity: 1, scale: 1,
@@ -137,12 +145,15 @@ export const JourneyIntroSection = () => {
         opacity: 1, x: 0,
         stagger: 0.022, duration: 0.65, ease: "power2.out",
       }, "-=0.4")
-      .to({}, { duration: 0.5 })
+      .to({}, { duration: INTRO_HOLD_DUR })
       .to(".split-title", {
         opacity: 0, y: -10, filter: "blur(5px)",
         duration: 0.4, ease: "power2.in",
       })
       .to(".split-subtitle, .meta-ui", { opacity: 0, duration: 0.28 }, "<+=0.06");
+
+    // Intro end
+    tl.addLabel("photoStart");
 
     // FASE B — scratch
     tl.to(".scratch-line", {
@@ -167,7 +178,7 @@ export const JourneyIntroSection = () => {
     // FASE D — year rewind (hidden span drives value; onUpdate rolls slots)
     tl.to(yearRef.current, {
       innerText: YEAR_END,
-      duration: REWIND_DUR,
+      duration: COUNTER_SEGMENT,
       snap: { innerText: 1 },
       ease: "none",
       onUpdate() {
@@ -179,18 +190,18 @@ export const JourneyIntroSection = () => {
           lastYearRef.current = yr;
         }
       },
-    });
+    }, "photoStart");
 
     // FASE D (parallel) — photo animations
-    const rl = "<"; // relative label: all photos anchored to start of year tween
+    const rl = "photoStart";
 
-    START_TIMES.forEach((startTime, i) => {
+    PHOTO_TIMINGS.forEach((item, i) => {
       const el = photoRefs.current[i];
       if (!el) return;
+
       const rot = ROTATIONS[i];
       const xOff = X_OFFSETS[i];
 
-      // Rise: blur clears, drifts to center, rotation settles
       tl.to(el, {
         y: "0vh",
         x: "0vw",
@@ -200,18 +211,16 @@ export const JourneyIntroSection = () => {
         filter: "blur(0px)",
         duration: RISE_DUR,
         ease: "power3.out",
-      }, `${rl}+=${startTime}`);
+      }, `${rl}+=${item.start}`);
 
-      // Hold: very slight breathe
       tl.to(el, {
         scale: 1.025,
-        duration: HOLD_DUR / 2,
+        duration: item.hold / 2,
         ease: "sine.inOut",
         yoyo: true,
         repeat: 1,
-      }, `${rl}+=${startTime + RISE_DUR}`);
+      }, `${rl}+=${item.start + RISE_DUR}`);
 
-      // Exit: blurs out, drifts back to origin side, shoots upward
       tl.to(el, {
         y: "-115vh",
         x: xOff,
@@ -221,7 +230,7 @@ export const JourneyIntroSection = () => {
         filter: "blur(7px)",
         duration: EXIT_DUR,
         ease: "power2.in",
-      }, `${rl}+=${startTime + RISE_DUR + HOLD_DUR}`);
+      }, `${rl}+=${item.start + RISE_DUR + item.hold}`);
     });
 
     // FASE E — pause
