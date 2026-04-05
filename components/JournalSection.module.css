@@ -1,6 +1,9 @@
-.journalSection {
-  perspective: 2500px;
-}
+/* ═══════════════════════════════════════════════════════════
+   JournalSection.module.css
+   Breakpoints: sm 640 / md 768 / lg 1024
+   ═══════════════════════════════════════════════════════════ */
+
+.journalSection { perspective: 2500px; }
 
 .paperTexture {
   position: absolute;
@@ -12,28 +15,744 @@
   z-index: 50;
 }
 
+/* ── Page wrapper ── */
 .pageWrapper {
   position: relative;
-  width: 85vw;
-  height: 85vh;
+  width: 94vw;
+  height: 90vh;
   max-width: 72rem;
 }
+@media (min-width: 640px)  { .pageWrapper { width: 90vw; height: 88vh; } }
+@media (min-width: 1024px) { .pageWrapper { width: 85vw; height: 85vh; } }
 
+/* ── Base page ── */
 .journalPage {
   position: absolute;
   width: 100%;
   height: 100%;
   background: #dcd5c5;
   color: #1a1a1a;
-  padding: 2.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(0,0,0,0.1);
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.05);
-
   --b: 1;
   filter: brightness(var(--b));
-
   transform-style: preserve-3d;
   backface-visibility: visible;
+}
+@media (min-width: 640px)  { .journalPage { padding: 1.5rem; } }
+@media (min-width: 1024px) { .journalPage { padding: 2.5rem; } }
+
+/* ══════════════════════════════════════════
+   SHARED
+══════════════════════════════════════════ */
+.pageHeader {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid black;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0; /* zero — images attach to header bottom */
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+@media (min-width: 1024px) { .pageHeader { flex-wrap: nowrap; } }
+
+.headerLeft { display: flex; flex-direction: column; }
+
+.headerMeta {
+  font-size: clamp(9px, 1vw, 11px);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.headerVol {
+  font-size: clamp(0.85rem, 2.2vw, 2.25rem);
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+.headerRight {
+  font-size: clamp(9px, 1vw, 11px);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.classifiedBadge {
+  position: absolute;
+  top: -1.1rem;
+  right: 3rem;
+  background: black;
+  color: #dcd5c5;
+  padding: 0.1rem 0.6rem;
+  rotate: 3deg;
+  font-size: clamp(9px, 1.1vw, 16px);
+  white-space: nowrap;
+}
+
+.p2AngleMark {
+  position: absolute;
+  top: -0.25rem;
+  right: 3rem;
+  font-size: clamp(1.8rem, 4.5vw, 5rem);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.fieldLabel {
+  font-size: clamp(9px, 1vw, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  opacity: 0.6;
+  margin-bottom: 0.1rem;
+  flex-shrink: 0;
+}
+
+.pageIndicator {
+  margin-top: 0.4rem;
+  text-align: right;
+  font-size: clamp(9px, 1vw, 11px);
+  letter-spacing: 0.5em;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   PAGE 1 — Dossier
+   Right col (logo): aligned to top, no centering
+══════════════════════════════════════════ */
+.p1Body {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+  min-height: 0;
+  overflow: hidden;
+  align-items: stretch; /* columns fill full height from top */
+}
+
+.p1Left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  overflow: hidden;
+  padding-top: 0.6rem;
+}
+
+.p1Right { display: none; }
+@media (min-width: 768px) {
+  .p1Right {
+    display: flex;
+    position: relative;
+    width: 26%;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center; /* logo vertically centred */
+    overflow: hidden;
+  }
+}
+
+.p1Logo {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: grayscale(1) contrast(1.25);
+  mix-blend-mode: multiply;
+}
+
+.p1Ornament { display: none; }
+@media (min-width: 768px) {
+  .p1Ornament {
+    display: flex;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    flex-direction: column;
+    align-items: center;
+    rotate: 6deg;
+  }
+}
+
+.ornamentLabel {
+  font-size: clamp(8px, 0.85vw, 10px);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  margin-top: -5px;
+}
+
+.p1HeadlineRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.p1Headline {
+  font-size: clamp(1.8rem, 6vw, 5.5rem);
+  line-height: 0.85;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+
+.p1ClearedBadge {
+  border: 3px solid black;
+  padding: 0.2rem 0.4rem;
+  text-align: center;
+  rotate: -15deg;
+  margin-top: -0.75rem;
+  flex-shrink: 0;
+}
+
+.clearedText {
+  font-size: clamp(8px, 0.9vw, 10px);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.p1DataGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.75rem;
+  border-top: 1px solid rgba(26,26,26,0.3);
+  padding-top: 0.35rem;
+  flex-shrink: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.p1FullRow { grid-column: 1 / -1; }
+
+.p1RoleTitle {
+  font-size: clamp(1rem, 2.2vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.p1RoleDesc {
+  font-size: clamp(10px, 1.2vw, 14px);
+  line-height: 1.5;
+  border-left: 2px solid rgba(26,26,26,0.2);
+  padding-left: 0.75rem;
+  font-style: italic;
+  font-weight: 500;
+  margin-top: 0.15rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+@media (min-width: 1024px) { .p1RoleDesc { -webkit-line-clamp: 4; } }
+
+.p1StatusText {
+  font-size: clamp(0.85rem, 1.8vw, 1.875rem);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projectLog {
+  border-top: 1px solid rgba(26,26,26,0.1);
+  padding-top: 0.35rem;
+  flex-shrink: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.projectLogTitle {
+  font-size: clamp(10px, 1.05vw, 12px);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.projectLogEntries {
+  font-size: clamp(10px, 1.15vw, 12px);
+  line-height: 1.5;
+  font-family: serif;
+  font-style: italic;
+}
+
+.projectLogEntries p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.projectLogEntries p + p { margin-top: 0.1rem; }
+
+/* Mobile-only bottom block (P1): stack compact info below */
+.p1MobileBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-top: 1px solid rgba(26,26,26,0.15);
+  padding-top: 0.4rem;
+  flex-shrink: 0;
+}
+@media (min-width: 768px) { .p1MobileBottom { display: none; } }
+
+/* ══════════════════════════════════════════
+   PAGE 2 — Education & Tech
+   Right col (computer): aligned to top
+══════════════════════════════════════════ */
+.p2Body {
+  display: flex;
+  flex: 1;
+  gap: 0.75rem;
+  min-height: 0;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+.p2Left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+  padding-top: 0.5rem;
+}
+
+.p2Right { display: none; }
+@media (min-width: 768px) {
+  .p2Right {
+    display: block;
+    position: relative;
+    width: 33%;
+    flex-shrink: 0;
+    border: 2px solid black;
+    border-top: none;
+    overflow: hidden;
+    align-self: stretch;
+  }
+}
+
+.p2SchoolLabel {
+  font-size: clamp(0.85rem, 1.8vw, 1.5rem);
+  display: inline-block;
+  margin-bottom: 0.4rem;
+}
+
+.p2EduSection {
+  flex-shrink: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.p2EduBlock { overflow: hidden; }
+
+/* Drop cap via CSS ::first-letter */
+.p2BodyText {
+  font-size: clamp(10px, 1.2vw, 14px);
+  line-height: 1.55;
+  border-left: 2px solid rgba(26,26,26,0.2);
+  padding-left: 0.75rem;
+  font-style: italic;
+  font-weight: 500;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+@media (min-width: 1024px) { .p2BodyText { -webkit-line-clamp: 4; } }
+
+/* Drop cap — cannot use ::first-letter with -webkit-box, so we use a wrapper span */
+.p2DropCap {
+  float: left;
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  line-height: 0.8;
+  margin-right: 0.2rem;
+  font-family: serif;
+  font-style: normal;
+  font-weight: 400;
+  color: #1a1a1a;
+}
+
+/* When using drop cap, the parent can't be webkit-box — use overflow:hidden only */
+.p2BodyTextDrop {
+  font-size: clamp(10px, 1.2vw, 14px);
+  line-height: 1.55;
+  border-left: 2px solid rgba(26,26,26,0.2);
+  padding-left: 0.75rem;
+  font-style: italic;
+  font-weight: 500;
+  overflow: hidden;
+  max-height: calc(1.55em * 5); /* ~5 lines max */
+}
+@media (min-width: 1024px) {
+  .p2BodyTextDrop { max-height: calc(1.55em * 6); }
+}
+
+.p2StackSection {
+  border-top: 1px solid rgba(26,26,26,0.1);
+  padding-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.p2StackTitle {
+  font-size: clamp(10px, 1.1vw, 13px);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.85;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.p2StackGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.75rem;
+}
+
+.p2StackItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(26,26,26,0.1);
+  padding: 0.18rem 0;
+  min-height: 1.6rem;
+  overflow: hidden;
+}
+
+.p2StackLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.p2StackName {
+  font-size: clamp(8px, 0.9vw, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p2StackRight {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.p2StackPct {
+  font-size: 8px;
+  opacity: 0.5;
+  min-width: 2rem;
+  text-align: right;
+}
+@media (max-width: 640px) { .p2StackPct { display: none; } }
+
+.p2Verified {
+  border-top: 1px dashed rgba(26,26,26,0.2);
+  padding-top: 0.25rem;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.p2VerifiedText {
+  font-size: clamp(9px, 1vw, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* Mobile-only bottom block (P2) */
+.p2MobileBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-top: 1px solid rgba(26,26,26,0.15);
+  padding-top: 0.4rem;
+  flex-shrink: 0;
+}
+@media (min-width: 768px) { .p2MobileBottom { display: none; } }
+
+.p2MobileNote {
+  font-size: clamp(10px, 1.2vw, 13px);
+  font-family: serif;
+  font-style: italic;
+  line-height: 1.4;
+  border-left: 2px solid rgba(26,26,26,0.2);
+  padding-left: 0.6rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* ══════════════════════════════════════════
+   PAGE 3 — Origin & Vision
+   City image: zero gap to subject badge
+══════════════════════════════════════════ */
+.p3Body {
+  display: flex;
+  flex: 1;
+  gap: 0.75rem;
+  min-height: 0;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+.p3Left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* gap controlled per-element so image+badge are flush */
+  overflow: hidden;
+}
+
+.p3Right { display: none; }
+@media (min-width: 768px) {
+  .p3Right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 0 0 0.75rem;
+    border-left: 1px solid rgba(26,26,26,0.1);
+    width: 30%;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+}
+
+/* City image: no bottom margin so badge is flush */
+.p3CityImage {
+  position: relative;
+  width: 100%;
+  height: clamp(7rem, 24vh, 15rem);
+  flex-shrink: 0;
+  border: 2px solid black;
+  padding: 0.25rem;
+  background: rgba(255,255,255,0.5);
+  margin-bottom: 0; /* flush */
+}
+
+.p3CityLabel {
+  position: absolute;
+  bottom: 0.35rem;
+  left: 0.35rem;
+  background: black;
+  color: #dcd5c5;
+  padding: 0.1rem 0.35rem;
+  font-size: clamp(8px, 0.85vw, 10px);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* Subject badge: flush against city image — no top padding/margin */
+.p3SubjectBlock {
+  flex-shrink: 0;
+  padding-top: 0; /* zero gap to image above */
+  margin-top: 0;
+}
+
+.p3SubjectBadge {
+  font-size: clamp(8px, 1vw, 14px);
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  margin-top: 0.25rem; /* tiny breathing room after border, not a gap */
+}
+
+.p3Desc {
+  font-size: clamp(10px, 1.2vw, 14px);
+  line-height: 1.5;
+  border-left: 2px solid rgba(26,26,26,0.2);
+  padding-left: 0.75rem;
+  font-style: italic;
+  font-weight: 500;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-top: 0.2rem;
+}
+
+.p3InfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  border-top: 1px solid rgba(26,26,26,0.1);
+  padding-top: 0.35rem;
+  flex-shrink: 0;
+  margin-top: 0.5rem;
+}
+
+.p3InfoTitle {
+  font-size: clamp(0.85rem, 1.8vw, 1.25rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p3Signature {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  border-top: 2px dashed rgba(26,26,26,0.2);
+  padding-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.p3SignatureBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.p3Stamp {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+}
+@media (min-width: 640px) { .p3Stamp { width: 5rem; height: 5rem; } }
+
+/* Terminal */
+.p3Terminal {
+  font-size: clamp(9px, 1.1vw, 13px);
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.p3KernelLabel {
+  font-size: clamp(9px, 1vw, 11px);
+  margin-bottom: 0.25rem;
+}
+
+.p3Logs {
+  border-top: 1px solid rgba(26,26,26,0.1);
+  padding-top: 0.4rem;
+  opacity: 0.8;
+}
+.p3Logs p + p { margin-top: 0.15rem; }
+
+.p3SecMark {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: clamp(2rem, 4vw, 6rem);
+  opacity: 0.05;
+  rotate: 90deg;
+  transform-origin: top right;
+  translate: 1rem 0;
+  pointer-events: none;
+}
+
+.p3Note {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.p3NoteInner {
+  background: #f2efe4;
+  padding: 0.65rem 0.75rem;
+  border-left: 4px solid rgba(26,26,26,0.4);
+  rotate: -1deg;
+  transition: rotate 0.3s ease;
+  overflow: hidden;
+}
+.p3NoteInner:hover { rotate: 0deg; }
+
+.p3NoteLabel {
+  font-size: clamp(9px, 1vw, 11px);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.p3NoteText {
+  font-size: clamp(11px, 1.4vw, 22px);
+  line-height: 1.15;
+  mix-blend-mode: multiply;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+.p3Meta {
+  margin-top: 0.4rem;
+  opacity: 0.3;
+  font-family: monospace;
+  font-size: clamp(9px, 1vw, 11px);
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* Mobile-only bottom block (P3): show terminal compact */
+.p3MobileBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-top: 1px solid rgba(26,26,26,0.15);
+  padding-top: 0.4rem;
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+}
+@media (min-width: 768px) { .p3MobileBottom { display: none; } }
+
+.p3MobileTerminalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: clamp(9px, 2.2vw, 12px);
+  font-weight: 700;
+}
+
+.p3MobileNoteText {
+  font-size: clamp(11px, 2.8vw, 14px);
+  font-family: serif;
+  font-style: italic;
+  line-height: 1.35;
+  border-left: 2px solid rgba(26,26,26,0.25);
+  padding-left: 0.6rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.endOfDossier {
+  margin-top: 0.4rem;
+  font-size: clamp(9px, 1vw, 11px);
+  letter-spacing: 0.8em;
+  opacity: 0.4;
+  flex-shrink: 0;
+  text-align: center;
 }

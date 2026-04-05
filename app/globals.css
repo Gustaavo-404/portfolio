@@ -28,19 +28,19 @@ body, body {
 
 /* Fontes */
 .title{
-  font-family: 'ChineseRocks', sans-serif;
+  font-family: 'ChineseRocks', sans-serif!important;
 }
 
 .count{
-  font-family: "Bebas Neue", sans-serif;
+  font-family: "Bebas Neue", sans-serif!important;
 }
 
 .subtitle{
-  font-family: "EB Garamond", serif;
+  font-family: "EB Garamond", serif!important;
 }
 
 .cursive-el{
-  font-family: "Mea Culpa", cursive;
+  font-family: "Mea Culpa", cursive!important;
 }
 
 /* Custom Highlight */
