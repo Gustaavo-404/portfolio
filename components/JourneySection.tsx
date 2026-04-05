@@ -487,8 +487,8 @@ export const JourneySection = () => {
     return (
         <section
             ref={sectionRef}
-            className="relative w-full overflow-hidden bg-[#dcd5c5]"
-            style={{ height: "100dvh" }}
+            className="relative w-full overflow-hidden bg-[#afafaf]"
+            style={{ height: "100dvh" }} 
         >
             <YearDisplay year={activeYear} isMobile={isMobile} />
 
