@@ -4,8 +4,6 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
   --font-chinese-rocks: 'ChineseRocks', sans-serif;
 }
 
@@ -24,9 +22,8 @@
 }
 
 /* Base */
-body {
-  background: #fff;
-  color: #000;
+body, body {
+  background: #000;
 }
 
 /* Fontes */

@@ -14,6 +14,8 @@ export default function Hero() {
     { label: "CONTACT", rotate: 270, id: "arc4" },
   ];
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const irisCircleRef = useRef<SVGCircleElement | null>(null);
+  const irisOverlayRef = useRef<SVGSVGElement | null>(null);
   useEffect(() => {
     // ================= GSAP =================
     const ctx = gsap.context(() => {
@@ -22,31 +24,40 @@ export default function Hero() {
         scale: 1.1,
         filter: "brightness(2) blur(5px)",
       });
-
       gsap.set(`.${styles["burn-overlay"]}`, { opacity: 1 });
 
       const tl = gsap.timeline();
 
-      tl.to(`.${styles["hero-wrapper"]}`, {
-        opacity: 1,
-        filter: "brightness(1.3) blur(0px)",
-        scale: 1,
-        duration: 1,
-        ease: "power2.out",
+      // 1. Iris abre primeiro
+      tl.to(irisCircleRef.current, {
+        attr: { r: "150%" },
+        duration: 1.0,
+        ease: "power2.inOut",
       })
-        .to(
-          `.${styles["burn-overlay"]}`,
-          {
-            opacity: 0,
-            duration: 0.8,
-            ease: "power2.in",
-          },
-          "-=0.5"
-        )
+        // 2. Hero aparece
+        .to(`.${styles["hero-wrapper"]}`, {
+          opacity: 1,
+          filter: "brightness(1.3) blur(0px)",
+          scale: 1,
+          duration: 1,
+          ease: "power2.out",
+        }, "-=0.5")
+        // 3. Burn overlay
+        .to(`.${styles["burn-overlay"]}`, {
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.in",
+        }, "-=0.5")
+        // 4. Brilho normal
         .to(`.${styles["hero-wrapper"]}`, {
           filter: "brightness(1)",
           duration: 0.4,
-        });
+        })
+        // 5. Iris some
+        .to(irisOverlayRef.current, {
+          opacity: 0,
+          duration: 0.2,
+        }, "-=0.3");
     });
 
     // ================= MOUSE =================
@@ -89,225 +100,225 @@ export default function Hero() {
     gsap.ticker.add(ticker);
 
     // ================= CANVAS =================
-const canvas = canvasRef.current;
-if (!canvas) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-const ctx2d = canvas.getContext("2d");
-if (!ctx2d) return;
+    const ctx2d = canvas.getContext("2d");
+    if (!ctx2d) return;
 
-const resize = () => {
-  const parent = canvas.parentElement;
-  if (!parent) return;
-  const rect = parent.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
-};
+    const resize = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    };
 
-resize();
-window.addEventListener("resize", resize);
+    resize();
+    window.addEventListener("resize", resize);
 
-const rand = (min: number, max: number) => Math.random() * (max - min) + min;
+    const rand = (min: number, max: number) => Math.random() * (max - min) + min;
 
-// ===== TIPOS =====
-type Scratch = {
-  x: number;
-  segments: { y: number; dx: number }[];
-  life: number;
-  maxLife: number;
-  width: number;
-};
+    // ===== TIPOS =====
+    type Scratch = {
+      x: number;
+      segments: { y: number; dx: number }[];
+      life: number;
+      maxLife: number;
+      width: number;
+    };
 
-type Dust = {
-  x: number;
-  y: number;
-  r: number;
-  opacity: number;
-  life: number;
-  maxLife: number;
-};
+    type Dust = {
+      x: number;
+      y: number;
+      r: number;
+      opacity: number;
+      life: number;
+      maxLife: number;
+    };
 
-type HairLine = {
-  x: number;
-  life: number;
-  maxLife: number;
-  width: number;
-};
+    type HairLine = {
+      x: number;
+      life: number;
+      maxLife: number;
+      width: number;
+    };
 
-const scratches: Scratch[] = [];
-const dusts: Dust[] = [];
-const hairlines: HairLine[] = [];
+    const scratches: Scratch[] = [];
+    const dusts: Dust[] = [];
+    const hairlines: HairLine[] = [];
 
-// ===== SCRATCH vertical segmentado =====
-const spawnScratch = (w: number, h: number) => {
-  const x = rand(0, w);
-  const segCount = Math.floor(h / 8);
-  const segments = Array.from({ length: segCount }, () => ({
-    y: 0,
-    dx: rand(-1.5, 1.5),
-  }));
+    // ===== SCRATCH vertical segmentado =====
+    const spawnScratch = (w: number, h: number) => {
+      const x = rand(0, w);
+      const segCount = Math.floor(h / 8);
+      const segments = Array.from({ length: segCount }, () => ({
+        y: 0,
+        dx: rand(-1.5, 1.5),
+      }));
 
-  // calcula y acumulado
-  let cy = 0;
-  for (const seg of segments) {
-    seg.y = cy;
-    cy += 8;
-  }
+      // calcula y acumulado
+      let cy = 0;
+      for (const seg of segments) {
+        seg.y = cy;
+        cy += 8;
+      }
 
-  scratches.push({
-    x,
-    segments,
-    life: rand(4, 12),
-    maxLife: 12,
-    width: rand(0.3, 1.0),
-  });
-};
+      scratches.push({
+        x,
+        segments,
+        life: rand(4, 12),
+        maxLife: 12,
+        width: rand(0.3, 1.0),
+      });
+    };
 
-// ===== DUST SPECK — grão de poeira que aparece e some =====
-const spawnDust = (w: number, h: number) => {
-  const life = rand(6, 20);
-  dusts.push({
-    x: rand(0, w),
-    y: rand(0, h),
-    r: rand(0.5, 2.5),
-    opacity: rand(0.3, 0.9),
-    life,
-    maxLife: life,
-  });
-};
+    // ===== DUST SPECK — grão de poeira que aparece e some =====
+    const spawnDust = (w: number, h: number) => {
+      const life = rand(6, 20);
+      dusts.push({
+        x: rand(0, w),
+        y: rand(0, h),
+        r: rand(0.5, 2.5),
+        opacity: rand(0.3, 0.9),
+        life,
+        maxLife: life,
+      });
+    };
 
-// ===== HAIRLINE — linha horizontal curta, artefato de película =====
-const spawnHairLine = (w: number, h: number) => {
-  const life = rand(2, 6);
-  hairlines.push({
-    x: rand(0, w * 0.7),
-    life,
-    maxLife: life,
-    width: rand(10, 80),
-  });
-};
+    // ===== HAIRLINE — linha horizontal curta, artefato de película =====
+    const spawnHairLine = (w: number, h: number) => {
+      const life = rand(2, 6);
+      hairlines.push({
+        x: rand(0, w * 0.7),
+        life,
+        maxLife: life,
+        width: rand(10, 80),
+      });
+    };
 
-let animationFrameId: number;
-let frameCount = 0;
+    let animationFrameId: number;
+    let frameCount = 0;
 
-// altura variável das hairlines ao longo do tempo
-let hairlineY = 0;
+    // altura variável das hairlines ao longo do tempo
+    let hairlineY = 0;
 
-const render = () => {
-  const w = canvas.width;
-  const h = canvas.height;
-  frameCount++;
+    const render = () => {
+      const w = canvas.width;
+      const h = canvas.height;
+      frameCount++;
 
-  ctx2d.clearRect(0, 0, w, h);
+      ctx2d.clearRect(0, 0, w, h);
 
-  // ── SPAWN ──
-  // scratch: raro, aparece em rajadas ocasionais
-  if (Math.random() < 0.012) spawnScratch(w, h);
-  // dust: frequente, dá textura
-  if (Math.random() < 0.15) spawnDust(w, h);
-  // hairline: bem raro
-  if (Math.random() < 0.006) {
-    hairlineY = rand(0, h);
-    spawnHairLine(w, h);
-  }
+      // ── SPAWN ──
+      // scratch: raro, aparece em rajadas ocasionais
+      if (Math.random() < 0.012) spawnScratch(w, h);
+      // dust: frequente, dá textura
+      if (Math.random() < 0.15) spawnDust(w, h);
+      // hairline: bem raro
+      if (Math.random() < 0.006) {
+        hairlineY = rand(0, h);
+        spawnHairLine(w, h);
+      }
 
-  // ── SCRATCHES ──
-  for (let i = scratches.length - 1; i >= 0; i--) {
-    const s = scratches[i];
-    const t = s.life / s.maxLife;
-    // fade in rápido, fade out lento
-    const alpha = t < 0.3 ? t / 0.3 : t > 0.8 ? (1 - t) / 0.2 : 1;
+      // ── SCRATCHES ──
+      for (let i = scratches.length - 1; i >= 0; i--) {
+        const s = scratches[i];
+        const t = s.life / s.maxLife;
+        // fade in rápido, fade out lento
+        const alpha = t < 0.3 ? t / 0.3 : t > 0.8 ? (1 - t) / 0.2 : 1;
 
-    ctx2d.save();
-    ctx2d.globalAlpha = alpha * 0.85;
-    ctx2d.strokeStyle = Math.random() > 0.15 ? "#ffffff" : "#ffe8b0";
-    ctx2d.lineWidth = s.width;
-    ctx2d.lineCap = "round";
+        ctx2d.save();
+        ctx2d.globalAlpha = alpha * 0.85;
+        ctx2d.strokeStyle = Math.random() > 0.15 ? "#ffffff" : "#ffe8b0";
+        ctx2d.lineWidth = s.width;
+        ctx2d.lineCap = "round";
 
-    ctx2d.beginPath();
-    for (let j = 0; j < s.segments.length; j++) {
-      const seg = s.segments[j];
-      const px = s.x + seg.dx * (j / s.segments.length) * 4;
-      const py = seg.y;
-      if (j === 0) ctx2d.moveTo(px, py);
-      else ctx2d.lineTo(px, py);
-    }
-    ctx2d.stroke();
-    ctx2d.restore();
+        ctx2d.beginPath();
+        for (let j = 0; j < s.segments.length; j++) {
+          const seg = s.segments[j];
+          const px = s.x + seg.dx * (j / s.segments.length) * 4;
+          const py = seg.y;
+          if (j === 0) ctx2d.moveTo(px, py);
+          else ctx2d.lineTo(px, py);
+        }
+        ctx2d.stroke();
+        ctx2d.restore();
 
-    s.life--;
-    if (s.life <= 0) scratches.splice(i, 1);
-  }
+        s.life--;
+        if (s.life <= 0) scratches.splice(i, 1);
+      }
 
-  // ── DUST SPECKS ──
-  for (let i = dusts.length - 1; i >= 0; i--) {
-    const d = dusts[i];
-    const t = d.life / d.maxLife;
-    const alpha = t < 0.2 ? t / 0.2 : t > 0.7 ? (1 - t) / 0.3 : 1;
+      // ── DUST SPECKS ──
+      for (let i = dusts.length - 1; i >= 0; i--) {
+        const d = dusts[i];
+        const t = d.life / d.maxLife;
+        const alpha = t < 0.2 ? t / 0.2 : t > 0.7 ? (1 - t) / 0.3 : 1;
 
-    ctx2d.save();
-    ctx2d.globalAlpha = alpha * d.opacity;
+        ctx2d.save();
+        ctx2d.globalAlpha = alpha * d.opacity;
 
-    // alterna entre branco (poeira clara) e preto (partícula escura)
-    const isLight = Math.random() > 0.4;
-    ctx2d.fillStyle = isLight ? "#ffffff" : "#1a1005";
+        // alterna entre branco (poeira clara) e preto (partícula escura)
+        const isLight = Math.random() > 0.4;
+        ctx2d.fillStyle = isLight ? "#ffffff" : "#1a1005";
 
-    ctx2d.beginPath();
-    ctx2d.ellipse(
-      d.x,
-      d.y,
-      d.r,
-      d.r * rand(0.6, 1.0), // levemente elíptico
-      rand(0, Math.PI),
-      0,
-      Math.PI * 2
-    );
-    ctx2d.fill();
-    ctx2d.restore();
+        ctx2d.beginPath();
+        ctx2d.ellipse(
+          d.x,
+          d.y,
+          d.r,
+          d.r * rand(0.6, 1.0), // levemente elíptico
+          rand(0, Math.PI),
+          0,
+          Math.PI * 2
+        );
+        ctx2d.fill();
+        ctx2d.restore();
 
-    d.life--;
-    if (d.life <= 0) dusts.splice(i, 1);
-  }
+        d.life--;
+        if (d.life <= 0) dusts.splice(i, 1);
+      }
 
-  // ── HAIRLINES horizontais ──
-  for (let i = hairlines.length - 1; i >= 0; i--) {
-    const h_line = hairlines[i];
-    const t = h_line.life / h_line.maxLife;
-    const alpha = t > 0.5 ? 1 : t / 0.5;
+      // ── HAIRLINES horizontais ──
+      for (let i = hairlines.length - 1; i >= 0; i--) {
+        const h_line = hairlines[i];
+        const t = h_line.life / h_line.maxLife;
+        const alpha = t > 0.5 ? 1 : t / 0.5;
 
-    ctx2d.save();
-    ctx2d.globalAlpha = alpha * 0.5;
-    ctx2d.strokeStyle = "#ffffff";
-    ctx2d.lineWidth = 0.5;
+        ctx2d.save();
+        ctx2d.globalAlpha = alpha * 0.5;
+        ctx2d.strokeStyle = "#ffffff";
+        ctx2d.lineWidth = 0.5;
 
-    ctx2d.beginPath();
-    ctx2d.moveTo(h_line.x, hairlineY);
-    ctx2d.lineTo(h_line.x + h_line.width, hairlineY + rand(-1, 1));
-    ctx2d.stroke();
-    ctx2d.restore();
+        ctx2d.beginPath();
+        ctx2d.moveTo(h_line.x, hairlineY);
+        ctx2d.lineTo(h_line.x + h_line.width, hairlineY + rand(-1, 1));
+        ctx2d.stroke();
+        ctx2d.restore();
 
-    h_line.life--;
-    if (h_line.life <= 0) hairlines.splice(i, 1);
-  }
+        h_line.life--;
+        if (h_line.life <= 0) hairlines.splice(i, 1);
+      }
 
-  // ── FLICKER DE EXPOSIÇÃO — vinheta quente ocasional ──
-  if (frameCount % 90 === 0 && Math.random() > 0.5) {
-    const grad = ctx2d.createRadialGradient(
-      w / 2, h / 2, h * 0.1,
-      w / 2, h / 2, h * 0.9
-    );
-    grad.addColorStop(0, "rgba(255, 240, 180, 0.0)");
-    grad.addColorStop(1, "rgba(255, 200, 80, 0.07)");
-    ctx2d.save();
-    ctx2d.globalAlpha = 1;
-    ctx2d.fillStyle = grad;
-    ctx2d.fillRect(0, 0, w, h);
-    ctx2d.restore();
-  }
+      // ── FLICKER DE EXPOSIÇÃO — vinheta quente ocasional ──
+      if (frameCount % 90 === 0 && Math.random() > 0.5) {
+        const grad = ctx2d.createRadialGradient(
+          w / 2, h / 2, h * 0.1,
+          w / 2, h / 2, h * 0.9
+        );
+        grad.addColorStop(0, "rgba(255, 240, 180, 0.0)");
+        grad.addColorStop(1, "rgba(255, 200, 80, 0.07)");
+        ctx2d.save();
+        ctx2d.globalAlpha = 1;
+        ctx2d.fillStyle = grad;
+        ctx2d.fillRect(0, 0, w, h);
+        ctx2d.restore();
+      }
 
-  animationFrameId = requestAnimationFrame(render);
-};
+      animationFrameId = requestAnimationFrame(render);
+    };
 
-render();
+    render();
 
     // ================= CLEANUP =================
     return () => {
@@ -322,6 +333,27 @@ render();
 
   return (
     <section className="w-full h-screen flex items-center justify-center bg-white overflow-hidden relative">
+
+      <svg
+        ref={irisOverlayRef}
+        style={{ position: "fixed", inset: 0, width: "100%", height: "100%", zIndex: 9998, pointerEvents: "none" }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <mask id="iris-open-mask">
+            <rect width="100%" height="100%" fill="white" />
+            <circle
+              ref={irisCircleRef}
+              cx="50%"
+              cy="50%"
+              r="0%"
+              fill="black"
+            />
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" fill="black" mask="url(#iris-open-mask)" />
+      </svg>
+
       <div className="relative flex items-center justify-center w-full h-full">
         <SoundToggle />
 
@@ -371,6 +403,7 @@ render();
                 height={800}
                 className={styles.img}
                 priority
+                unoptimized
               />
               <Image
                 src="/images/hero-portrait-nsg.png"
@@ -378,6 +411,7 @@ render();
                 width={600}
                 height={800}
                 className={styles.glitchClone1}
+                unoptimized
               />
               <Image
                 src="/images/hero-portrait-nsg.png"
@@ -385,6 +419,7 @@ render();
                 width={600}
                 height={800}
                 className={styles.glitchClone2}
+                unoptimized
               />
             </div>
           </div>

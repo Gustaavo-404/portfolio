@@ -101,11 +101,18 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
 
         const mainTl = gsap.timeline({
             onComplete: () => {
-                gsap.to(".loader", {
-                    opacity: 0,
-                    duration: 1.2,
-                    delay: 1.2,
-                    onComplete: onFinish,
+                gsap.to(".iris-circle", {
+                    attr: { r: "0%" },
+                    duration: 1.1,
+                    delay: 0.8,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.to(".loader", {
+                            opacity: 0,
+                            duration: 0.3,
+                            onComplete: onFinish,
+                        });
+                    },
                 });
             },
         });
@@ -244,6 +251,40 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
             {enableFilmDirt && <div className={styles.filmDirt} />}
             {enableScanlines && <div className={styles.scanlines} />}
             {enableBurnEdge && <div className={styles.burnEdge} />}
+
+            {/* IRIS CLOSE */}
+            <svg
+                className="iris-overlay"
+                style={{
+                    position: "fixed",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    zIndex: 99999,
+                    pointerEvents: "none",
+                }}
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <defs>
+                    <mask id="iris-mask">
+                        <rect width="100%" height="100%" fill="white" />
+                        <circle
+                            className="iris-circle"
+                            cx="50%"
+                            cy="50%"
+                            r="150%"
+                            fill="black"
+                        />
+                    </mask>
+                </defs>
+                <rect
+                    width="100%"
+                    height="100%"
+                    fill="black"
+                    mask="url(#iris-mask)"
+                />
+            </svg>
+
         </div>
     );
 }
