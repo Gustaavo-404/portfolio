@@ -4,14 +4,19 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import SoundToggle from "@/components/SoundToggle";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "../LanguageToggle";
+import LanguageToggleMobile from "../LanguageToggleMobile";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
-  const items = [
-    { label: "ABOUT", rotate: 0, id: "arc1" },
-    { label: "PROJECTS", rotate: 90, id: "arc2" },
-    { label: "STACK", rotate: 180, id: "arc3" },
-    { label: "CONTACT", rotate: 270, id: "arc4" },
+  const { locale, toggleLang, t: tx } = useLanguage();
+
+  const navItems = [
+    { key: "about", rotate: 0, id: "arc1" },
+    { key: "projects", rotate: 90, id: "arc2" },
+    { key: "stack", rotate: 180, id: "arc3" },
+    { key: "contact", rotate: 270, id: "arc4" },
   ];
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -411,36 +416,46 @@ export default function Hero() {
       {isMobile && (
         <header className={styles["mobile-header"]}>
           <div className={styles["mobile-header-inner"]}>
-            <span className={styles["mobile-logo"]}>PORTFOLIO</span>
-            <button
-              className={styles["mobile-menu-btn"]}
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              aria-label="Toggle menu"
-            >
-              <span
-                className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-1"] : ""}`}
-              />
-              <span
-                className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-2"] : ""}`}
-              />
-              <span
-                className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-3"] : ""}`}
-              />
-            </button>
+            {/* Logo */}
+            <span className={styles["mobile-logo"]}>
+              {tx.hero.mobileLogoLabel}
+            </span>
+
+            <div className="flex items-center gap-4">
+              {/* Language Toggle */}
+              <LanguageToggleMobile />
+
+              {/* Menu Button */}
+              <button
+                className={styles["mobile-menu-btn"]}
+                onClick={() => setMobileMenuOpen((v) => !v)}
+                aria-label="Toggle menu"
+              >
+                <span
+                  className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-1"] : ""}`}
+                />
+                <span
+                  className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-2"] : ""}`}
+                />
+                <span
+                  className={`${styles["burger-line"]} ${mobileMenuOpen ? styles["burger-line--open-3"] : ""}`}
+                />
+              </button>
+            </div>
           </div>
 
           {/* Dropdown nav */}
           <nav
             className={`${styles["mobile-nav"]} ${mobileMenuOpen ? styles["mobile-nav--open"] : ""}`}
           >
-            {items.map((item) => (
+            {navItems.map((item) => (
               <a
                 key={item.id}
-                href={`#${item.label.toLowerCase()}`}
+                href={`#${item.key}`}
                 className={styles["mobile-nav-link"]}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                {item.label}
+                {tx.hero.nav[item.key as keyof typeof tx.hero.nav]}
               </a>
             ))}
           </nav>
@@ -449,18 +464,17 @@ export default function Hero() {
 
       <div className="relative flex items-center justify-center w-full h-full">
         <SoundToggle />
+        {/* LanguageToggle desktop */}
+        <LanguageToggle />
 
         {/* ===== DESKTOP SPINNER ===== */}
         {!isMobile && (
-          <svg
-            viewBox="0 0 100 100"
-            className={styles["spinner-svg"]}
-          >
+          <svg viewBox="0 0 100 100" className={styles["spinner-svg"]}>
             <g className={styles.spinner}>
               <defs>
-                {items.map((item, i) => (
+                {navItems.map((item) => (
                   <path
-                    key={i}
+                    key={item.id}
                     id={item.id}
                     d="M 50,10 A 40,40 0 0,1 90,50"
                     transform={`rotate(${item.rotate} 50 50)`}
@@ -468,19 +482,17 @@ export default function Hero() {
                 ))}
               </defs>
 
-              {items.map((item, i) => (
-                <g key={i}>
+              {navItems.map((item) => (
+                <g key={item.id}>
                   <use href={`#${item.id}`} className={styles.arc} />
                   <text className={`${styles["arc-text"]} ${styles.title}`}>
                     <textPath
                       href={`#${item.id}`}
                       startOffset="50%"
                       textAnchor="middle"
-                      dy={
-                        item.rotate === 0 || item.rotate === 90 ? 6 : -6
-                      }
+                      dy={item.rotate === 0 || item.rotate === 90 ? 6 : -6}
                     >
-                      {item.label}
+                      {tx.hero.nav[item.key as keyof typeof tx.hero.nav]}
                     </textPath>
                   </text>
                 </g>
@@ -539,9 +551,10 @@ export default function Hero() {
                 priority
                 style={{ objectFit: "contain", objectPosition: "center" }}
               />
-              {/* SIGNATURE — desktop hover mask apenas */}
               {!isMobile && (
-                <div className={`${styles["image-layer"]} ${styles["signature-mask"]}`}>
+                <div
+                  className={`${styles["image-layer"]} ${styles["signature-mask"]}`}
+                >
                   <div className={styles.glitch}>
                     <Image
                       src="/images/hero-portrait-sg.png"
