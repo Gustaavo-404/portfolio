@@ -520,3 +520,134 @@
   0%,100% { opacity: 1; }
   50%     { opacity: 0; }
 }
+
+@media (max-width: 1024px) {
+  .section {
+    padding: 64px 32px;
+  }
+
+  .grid {
+    grid-template-columns: 240px 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 860px) {
+  .section {
+    padding: 56px 24px;
+  }
+
+  .inner {
+    gap: 40px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .radarCol {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .radioScreen {
+    max-width: 140px;
+    flex-shrink: 0;
+  }
+
+  .radarMeta {
+    flex: 1;
+    min-width: 160px;
+    margin-bottom: 0;
+    border-top: none;
+    border-left: 1px solid rgba(140,255,176,0.15);
+    padding: 0 0 0 20px;
+  }
+
+  .links {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .section {
+    padding: 48px 16px;
+    min-height: auto;
+  }
+
+  .inner {
+    gap: 32px;
+  }
+
+  .cornerTL { top: 12px; left: 12px; }
+  .cornerTR { top: 12px; right: 12px; }
+  .cornerBL { bottom: 12px; left: 12px; }
+  .cornerBR { bottom: 12px; right: 12px; }
+  .topBorder { top: 12px; left: 12px; right: 12px; }
+
+  .headingTitle {
+    font-size: clamp(2rem, 10vw, 2.8rem);
+  }
+
+  .fieldRow {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .radarCol {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .radioScreen {
+    max-width: 160px;
+    margin-bottom: 16px;
+  }
+
+  .radarMeta {
+    border-left: none;
+    border-top: 1px solid rgba(140,255,176,0.15);
+    padding: 14px 0 0 0;
+    margin-bottom: 24px;
+  }
+
+  .submitRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .submitBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wavePanelFooter {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .bottomBar {
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 360px) {
+  .section {
+    padding: 40px 12px;
+  }
+
+  .headingTitle {
+    font-size: clamp(1.8rem, 11vw, 2.2rem);
+  }
+
+  .wavePanelHeader {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
