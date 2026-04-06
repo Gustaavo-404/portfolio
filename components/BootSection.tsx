@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./BootSection.module.css";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,9 +14,6 @@ const SPRITE_WIDTH  = 2028 / SPRITE_COLS;
 const SPRITE_HEIGHT = 3240 / SPRITE_ROWS;
 const START_FRAME   = 18;
 const ACTIVE_FRAMES = 18;
-
-const DEFAULT_DESCRIPTION =
-  "A curated selection of digital constructs built in the wasteland. Hover a project from the log to access schematics and mission data.";
 
 type Project = {
   name: string;
@@ -39,9 +37,9 @@ const PROJECTS: Project[] = [
     logo: "/images/logos/gitgraph.png",
     screenshots: ["/images/screenshots/gitgraph1.png", "/images/screenshots/gitgraph2.png", "/images/screenshots/gitgraph3.png"],
     stack: ["PostgreSQL", "Prisma", "TypeScript", "React", "Next.js", "D3", "GSAP"],
-    problem: "Raw GitHub data is fragmented across repos — devs lack a single surface to read signals and act on them.",
-    result: "High-end SaaS analytics platform with GitHub OAuth, delivering a full dashboard for repo metrics, stars, forks, open issues, and commit history at a glance.",
-    description: "Full-stack dashboard for GitHub repositories. Visualizes commit history and branch structures through interactive D3 graph rendering.",
+    problem: "",
+    result: "",
+    description: "",
     repoUrl: "https://github.com/Gustaavo-404/gitgraph",
     videoUrl: "https://youtu.be/zlDLipwbL3g",
   },
@@ -51,9 +49,9 @@ const PROJECTS: Project[] = [
     logo: "/images/logos/alphaweb.png",
     screenshots: ["/images/screenshots/alphaweb1.png", "/images/screenshots/alphaweb2.png", "/images/screenshots/alphaweb3.png"],
     stack: ["MySQL", "Java", "PHP", "Python", "Transformers", "GPT-4o mini", "DeepSeek V3", "Llama 3.8B", "Three.js"],
-    problem: "Deploying a custom AI chatbot requires deep ML knowledge, putting the technology out of reach for most teams.",
-    result: "A chatbot library platform that reduces creation to a form — name, dataset, prompt, category — abstracting all model complexity behind a clean UI.",
-    description: "Full-stack platform for building and managing AI chatbots via form-based configuration. Multi-model LLM support with a public chatbot library.",
+    problem: "",
+    result: "",
+    description: "",
     repoUrl: "https://github.com/",
     videoUrl: "https://youtu.be/tQpCruAGaR4",
     repoAvailable: false,
@@ -64,9 +62,9 @@ const PROJECTS: Project[] = [
     logo: "/images/logos/expertinvest.png",
     screenshots: ["/images/screenshots/expertinvest1.png", "/images/screenshots/expertinvest2.png", "/images/screenshots/expertinvest3.png"],
     stack: ["Node.js", "Express", "React", "Python", "PuLP", "SQLite"],
-    problem: "Portfolio allocation is usually driven by intuition rather than mathematics, leading to suboptimal risk/return ratios.",
-    result: "Optimization engine powered by the Simplex method — input assets and constraints, get the mathematically optimal allocation with interactive charts.",
-    description: "Full-stack investment optimization platform implementing portfolio allocation via the Simplex method through PuLP.",
+    problem: "",
+    result: "",
+    description: "",
     repoUrl: "https://github.com/Gustaavo-404/expertinvest",
     videoUrl: "https://youtu.be/89HojXqSapk",
   },
@@ -76,9 +74,9 @@ const PROJECTS: Project[] = [
     logo: "/images/logos/healthtrack.png",
     screenshots: ["/images/screenshots/healthtrack1.png", "/images/screenshots/healthtrack2.png", "/images/screenshots/healthtrack3.png"],
     stack: ["Node.js", "Express", "React", "MySQL"],
-    problem: "Generic fitness apps ignore individual biometrics, delivering one-size-fits-all advice that fails most users.",
-    result: "Health platform generating personalized daily targets — hydration, sleep, diet — based on user profile, with a Duolingo-style streak system to drive daily engagement.",
-    description: "Full-stack health monitoring platform tracking BMI, BMR, and body composition with personalized goal setting and daily streak mechanics.",
+    problem: "",
+    result: "",
+    description: "",
     repoUrl: "https://github.com/Gustaavo-404/healthtrack",
     videoUrl: "https://youtu.be/z2zL9pH_1cA",
   },
@@ -88,9 +86,9 @@ const PROJECTS: Project[] = [
     logo: "/images/logos/old-portfolio.png",
     screenshots: ["/images/screenshots/old-portfolio1.png", "/images/screenshots/old-portfolio2.png", "/images/screenshots/old-portfolio3.png"],
     stack: ["React", "Three.js", "GSAP"],
-    problem: "Heavy GSAP and Three.js pipelines pushed frame times past 60ms on mid-range hardware, making the experience unusable.",
-    result: "Archived as a reference point — performance lessons learned here drove the architecture decisions behind the current, more resilient build.",
-    description: "First portfolio iteration with a cyberpunk theme. Archived after performance constraints required a ground-up rebuild.",
+    problem: "",
+    result: "",
+    description: "",
     repoUrl: "https://github.com/",
     videoUrl: "https://youtu.be/H4r3vkOyJ64",
     repoAvailable: false,
@@ -101,15 +99,28 @@ const PROJECTS: Project[] = [
     logo: "/images/logos/retail-chatbot.png",
     screenshots: ["/images/screenshots/retail-chatbot1.png", "/images/screenshots/retail-chatbot2.png", "/images/screenshots/retail-chatbot3.png"],
     stack: ["Node.js", "Express", "Transformers.js", "GPT-4o mini"],
-    problem: "Retail support bots rely on rigid keyword trees, failing when customers phrase queries naturally.",
-    result: "RAG-powered conversational webhook on Blip — embedding-based product search lets the bot answer free-form queries like 'do you have a tank top?' with real catalogue data.",
-    description: "Conversational RAG chatbot webhook integrated with the Blip platform, serving as AI assistant for a fictional retail store.",
+    problem: "",
+    result: "",
+    description: "",
     repoUrl: "https://github.com/Gustaavo-404/blip-llm-webhook-bot",
     videoUrl: "https://youtu.be/65cU-onvC8w",
   },
 ];
 
 export const BootSection = () => {
+  const { t } = useLanguage();
+
+  // Merge static project data with translated strings
+  const projects = PROJECTS.map((p) => {
+    const tx = t.boot.projects[p.name as keyof typeof t.boot.projects];
+    return {
+      ...p,
+      description: tx?.description ?? p.description,
+      problem:     tx?.problem     ?? p.problem,
+      result:      tx?.result      ?? p.result,
+    };
+  });
+
   const sectionRef      = useRef<HTMLElement>(null);
   const textRef         = useRef<HTMLDivElement>(null);
   const noiseRef        = useRef<HTMLDivElement>(null);
@@ -134,8 +145,8 @@ export const BootSection = () => {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const lightboxImgRef = useRef<HTMLImageElement>(null);
 
-  const hoveredData    = hoveredProject  ? PROJECTS.find((p) => p.name === hoveredProject)  ?? null : null;
-  const selectedData   = selectedProject ? PROJECTS.find((p) => p.name === selectedProject) ?? null : null;
+  const hoveredData    = hoveredProject  ? projects.find((p) => p.name === hoveredProject)  ?? null : null;
+  const selectedData   = selectedProject ? projects.find((p) => p.name === selectedProject) ?? null : null;
   const displayProject = hoveredData ?? selectedData;
 
   const closeExpanded = () => {
@@ -157,8 +168,8 @@ export const BootSection = () => {
     setSelectedProject((prev) => {
       if (prev === name) { prevProjectRef.current = null; return null; }
       if (prev !== null && expandedBodyRef.current) {
-        const fromIdx = PROJECTS.findIndex((p) => p.name === prev);
-        const toIdx   = PROJECTS.findIndex((p) => p.name === name);
+        const fromIdx = projects.findIndex((p) => p.name === prev);
+        const toIdx   = projects.findIndex((p) => p.name === name);
         const dir     = toIdx > fromIdx ? 1 : -1;
         gsap.to(expandedBodyRef.current, {
           x: -dir * 48, opacity: 0, duration: 0.18, ease: "power2.in",
@@ -219,7 +230,6 @@ export const BootSection = () => {
 
   useEffect(() => { currentHoverRef.current = hoveredProject; }, [hoveredProject]);
 
-  // Center expand (desktop only)
   useEffect(() => {
     if (!centerInnerRef.current) return;
     if (window.innerWidth >= 1024) {
@@ -230,7 +240,6 @@ export const BootSection = () => {
     }
   }, [selectedData]);
 
-  // Keyboard
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
       if (lightboxOpen) {
@@ -245,7 +254,6 @@ export const BootSection = () => {
     return () => window.removeEventListener("keydown", fn);
   }, [lightboxOpen, closeLightbox, navigateLightbox, drawerOpen]);
 
-  // Main GSAP
   useEffect(() => {
     if (!sectionRef.current || !textRef.current) return;
 
@@ -285,7 +293,7 @@ export const BootSection = () => {
       },
     });
 
-    const TARGET = "CONNECTION FOUND";
+    const TARGET = t.bootIntro.connectionFound;
     let ci = 0;
     textRef.current.innerHTML = TARGET.split("")
       .map((ch) => {
@@ -368,7 +376,6 @@ export const BootSection = () => {
       },
     });
 
-    // Sprite animation
     if (spriteRef.current) {
       let frame = 0, lastTime = 0;
       const interval = 1000 / 25;
@@ -394,6 +401,12 @@ export const BootSection = () => {
     };
   }, []);
 
+  const miniStats = [
+    t.boot.miniStatExperience,
+    t.boot.miniStatCompletion,
+    t.boot.miniStatReputation,
+  ];
+
   return (
     <section ref={sectionRef} className="boot-section relative w-full h-screen">
       <div ref={bgRef} className="absolute inset-0 z-0 pointer-events-none" />
@@ -411,18 +424,18 @@ export const BootSection = () => {
       {lightboxOpen && selectedData && (
         <div className={styles.lightboxOverlay} onClick={closeLightbox}>
           <button className={`${styles.lightboxArrow} ${styles.lightboxArrowLeft}`}
-            onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }} aria-label="Previous">‹</button>
+            onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }} aria-label={t.boot.lightboxPrev}>‹</button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img ref={lightboxImgRef} src={selectedData.screenshots[lightboxIndex]}
             alt={`Screenshot ${lightboxIndex + 1}`} className={styles.lightboxImg}
             onClick={(e) => e.stopPropagation()} />
           <button className={`${styles.lightboxArrow} ${styles.lightboxArrowRight}`}
-            onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }} aria-label="Next">›</button>
+            onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }} aria-label={t.boot.lightboxNext}>›</button>
           <div className={styles.lightboxMeta} onClick={(e) => e.stopPropagation()}>
             <span className={styles.lightboxCounter}>
               {String(lightboxIndex + 1).padStart(2, "0")} / {String(selectedData.screenshots.length).padStart(2, "0")}
             </span>
-            <button className={styles.lightboxClose} onClick={closeLightbox} aria-label="Close">✕</button>
+            <button className={styles.lightboxClose} onClick={closeLightbox} aria-label={t.boot.lightboxClose}>✕</button>
           </div>
           <div className={styles.lightboxDots} onClick={(e) => e.stopPropagation()}>
             {selectedData.screenshots.map((_, i) => (
@@ -449,11 +462,11 @@ export const BootSection = () => {
         <div className={styles.mainContent}>
           <div className={styles.scanlineOverlay} />
 
-          {/* ── MOBILE LOGO BAR (replaces left panel entirely on mobile) ── */}
+          {/* MOBILE LOGO BAR */}
           <div className={styles.mobileLogoBar}>
-            <div className={styles.mobileLogoBarLabel}>▸ PROJECTS</div>
+            <div className={styles.mobileLogoBarLabel}>{t.boot.mobileLogoBarLabel}</div>
             <div className={styles.mobileLogoScroll}>
-              {PROJECTS.map((p) => (
+              {projects.map((p) => (
                 <button
                   key={p.name}
                   className={`${styles.mobileLogoBtn} ${selectedProject === p.name ? styles.mobileLogoBtnActive : ""}`}
@@ -468,26 +481,26 @@ export const BootSection = () => {
             </div>
           </div>
 
-          {/* Drawer toggle — tablet only */}
+          {/* Drawer toggle */}
           <button
             className={`${styles.drawerToggle} ${drawerOpen ? styles.drawerToggleOpen : ""}`}
             onClick={() => setDrawerOpen((v) => !v)}
             aria-label="Toggle project list"
           >
             {drawerOpen ? "◀" : "▶"}
-            <span className={styles.drawerToggleLabel}>LOG</span>
+            <span className={styles.drawerToggleLabel}>{t.boot.drawerToggleLabel}</span>
           </button>
 
           {drawerOpen && (
             <div className={styles.drawerBackdrop} onClick={() => setDrawerOpen(false)} />
           )}
 
-          {/* LEFT PANEL — desktop always, tablet as drawer */}
+          {/* LEFT PANEL */}
           <div className={`${styles.leftPanel} ${drawerOpen ? styles.leftPanelDrawerOpen : ""}`}>
-            <div className={styles.panelTitle}>▸ PROJECTS LOG</div>
+            <div className={styles.panelTitle}>{t.boot.panelTitle}</div>
             <div className={styles.projectsList}>
               <ul>
-                {PROJECTS.map((p) => (
+                {projects.map((p) => (
                   <li
                     key={p.name}
                     className={`${styles.projectItem} ${selectedProject === p.name ? styles.projectItemSelected : ""}`}
@@ -505,7 +518,7 @@ export const BootSection = () => {
               </ul>
             </div>
             <div className={styles.miniStats}>
-              {["EXPERIENCE", "COMPLETION", "REPUTATION"].map((label) => (
+              {miniStats.map((label) => (
                 <div key={label} className={styles.miniStatRow}>
                   <span>{label}</span>
                   <div className={styles.miniBarWrap}>
@@ -541,10 +554,10 @@ export const BootSection = () => {
                   <img ref={logoRef} src="" alt="" className={styles.projectLogo} style={{ opacity: 0 }} />
                 </div>
 
-                <p className={styles.spriteLabel}>◆ PROJECTS INTERFACE ◆</p>
-                <p className={styles.spriteTitle}>{displayProject?.name ?? "DEVELOPER TERMINAL"}</p>
-                <p className={styles.spriteDescription}>{displayProject?.description ?? DEFAULT_DESCRIPTION}</p>
-                {!selectedData && <p className={styles.spriteHint}>[ CLICK TO ACCESS SCHEMATICS ]</p>}
+                <p className={styles.spriteLabel}>{t.boot.spriteLabel}</p>
+                <p className={styles.spriteTitle}>{displayProject?.name ?? t.boot.spriteTitle}</p>
+                <p className={styles.spriteDescription}>{displayProject?.description ?? t.boot.spriteDefaultDesc}</p>
+                {!selectedData && <p className={styles.spriteHint}>{t.boot.spriteHint}</p>}
               </div>
 
               {/* Expanded view */}
@@ -565,7 +578,7 @@ export const BootSection = () => {
                           ))}
                         </div>
                       </div>
-                      <button className={styles.closeBtn} onClick={closeExpanded} aria-label="Close">✕</button>
+                      <button className={styles.closeBtn} onClick={closeExpanded} aria-label={t.boot.closeBtnLabel}>✕</button>
                     </div>
 
                     <div className={styles.screenshotsGrid}>
@@ -581,11 +594,11 @@ export const BootSection = () => {
 
                     <div className={styles.detailsRow}>
                       <div className={styles.detailBlock}>
-                        <div className={styles.detailLabel}>▸ MISSION OBJECTIVE</div>
+                        <div className={styles.detailLabel}>{t.boot.missionObjectiveLabel}</div>
                         <p className={styles.problemText}>{selectedData.problem}</p>
                       </div>
                       <div className={styles.detailBlock}>
-                        <div className={`${styles.detailLabel} ${styles.resultLabel}`}>▸ OUTCOME</div>
+                        <div className={`${styles.detailLabel} ${styles.resultLabel}`}>{t.boot.outcomeLabel}</div>
                         <p className={styles.resultText}>{selectedData.result}</p>
                       </div>
                     </div>
@@ -593,20 +606,20 @@ export const BootSection = () => {
                     <div className={styles.ctaRow}>
                       {selectedData.repoAvailable === false ? (
                         <span className={`${styles.ctaBtn} ${styles.ctaBtnUnavailable}`}>
-                          <span className={styles.ctaBtnIcon}>⊘</span> UNAVAILABLE
+                          <span className={styles.ctaBtnIcon}>⊘</span> {t.boot.unavailableBtn.replace("⊘ ", "")}
                         </span>
                       ) : (
                         <a href={selectedData.repoUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaBtn}>
-                          <span className={styles.ctaBtnIcon}>⌥</span> REPOSITORY
+                          <span className={styles.ctaBtnIcon}>⌥</span> {t.boot.repoBtn.replace("⌥ ", "")}
                         </a>
                       )}
                       {selectedData.videoAvailable === false ? (
                         <span className={`${styles.ctaBtn} ${styles.ctaBtnAlt} ${styles.ctaBtnUnavailable}`}>
-                          <span className={styles.ctaBtnIcon}>⊘</span> UNAVAILABLE
+                          <span className={styles.ctaBtnIcon}>⊘</span> {t.boot.unavailableBtn.replace("⊘ ", "")}
                         </span>
                       ) : (
                         <a href={selectedData.videoUrl} target="_blank" rel="noopener noreferrer" className={`${styles.ctaBtn} ${styles.ctaBtnAlt}`}>
-                          <span className={styles.ctaBtnIcon}>▶</span> DEMO VIDEO
+                          <span className={styles.ctaBtnIcon}>▶</span> {t.boot.videoBtn.replace("▶ ", "")}
                         </a>
                       )}
                     </div>
@@ -621,22 +634,22 @@ export const BootSection = () => {
         <div className={styles.footer}>
           <div className={styles.footerLeft}>
             <div className={styles.statBox}>
-              <span>HP</span>
+              <span>{t.boot.footerHp}</span>
               <div className={styles.bar}><div className={styles.fill} style={{ width: "0%", transition: "width 1s steps(10)" }} /></div>
-              <span>140/140</span>
+              <span>{t.boot.footerHpVal}</span>
             </div>
           </div>
           <div className={styles.footerCenter}>
-            <span>◈ CORE-TEC ◈</span>
+            <span>{t.boot.footerCenter}</span>
             <span className={styles.cursor} />
           </div>
           <div className={styles.footerRight}>
             <div className={styles.statBox}>
-              <span>AP</span>
+              <span>{t.boot.footerAp}</span>
               <div className={styles.bar}><div className={styles.fill} style={{ width: "0%", transition: "width 1s steps(10)" }} /></div>
-              <span>85/85</span>
+              <span>{t.boot.footerApVal}</span>
             </div>
-            <span className={styles.coords}>▸ LVL 24</span>
+            <span className={styles.coords}>{t.boot.footerLvl}</span>
           </div>
         </div>
       </div>
