@@ -69,3 +69,16 @@ body, body {
 ::-webkit-scrollbar-thumb:hover {
   background: #333;
 }
+
+/* UI Responsive */
+@media (max-width: 768px) {
+  .sound-toggle,
+  .sound-toggle * {
+    color: white !important;
+    border-color: white !important;
+  }
+  
+  .sound-toggle div::after {
+    background-color: white !important;
+  }
+}

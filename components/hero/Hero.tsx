@@ -539,23 +539,34 @@ export default function Hero() {
                 priority
                 style={{ objectFit: "contain", objectPosition: "center" }}
               />
+              {/* SIGNATURE — desktop hover mask apenas */}
               {!isMobile && (
-                <>
-                  <Image
-                    src="/images/hero-portrait-sg.png"
-                    alt=""
-                    fill
-                    className={styles.glitchClone1}
-                    style={{ objectFit: "contain" }}
-                  />
-                  <Image
-                    src="/images/hero-portrait-sg.png"
-                    alt=""
-                    fill
-                    className={styles.glitchClone2}
-                    style={{ objectFit: "contain" }}
-                  />
-                </>
+                <div className={`${styles["image-layer"]} ${styles["signature-mask"]}`}>
+                  <div className={styles.glitch}>
+                    <Image
+                      src="/images/hero-portrait-sg.png"
+                      alt="portrait signed"
+                      fill
+                      className={styles.img}
+                      priority
+                      style={{ objectFit: "contain", objectPosition: "center" }}
+                    />
+                    <Image
+                      src="/images/hero-portrait-sg.png"
+                      alt=""
+                      fill
+                      className={styles.glitchClone1}
+                      style={{ objectFit: "contain" }}
+                    />
+                    <Image
+                      src="/images/hero-portrait-sg.png"
+                      alt=""
+                      fill
+                      className={styles.glitchClone2}
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
           </div>

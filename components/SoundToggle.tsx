@@ -49,7 +49,7 @@ export default function SoundToggle() {
   };
 
   return (
-    <div className="absolute bottom-10 right-10 z-20 text-[14px] tracking-[2.5px] text-[#111]">
+    <div className="absolute bottom-10 right-10 z-20 text-[14px] tracking-[2.5px] sound-toggle">
       
       <span className="block mb-2 text-[11px] text-[#030303] title">
         SOUND

@@ -86,7 +86,6 @@ svg:has(.arc:hover) .spinner {
   justify-content: center;
 }
 
-/* Use position relative on the glitch wrapper so fill images work */
 .glitch {
   position: relative;
   width: 100%;
@@ -171,15 +170,8 @@ svg:has(.arc:hover) .spinner {
   --size: 120px;
 }
 
-/* Mobile: signature always visible */
 .signature-mobile {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.signature-mobile img {
-  filter: drop-shadow(0 0 4px rgba(255, 255, 200, 0.3));
+  display: none;
 }
 
 /* ==============================
@@ -288,6 +280,8 @@ svg:has(.arc:hover) .spinner {
   background-image: none;
   box-shadow: inset 0 0 40px rgba(0,0,0,0.15);
   animation: flicker 0.3s infinite;
+  filter: brightness(0.95);
+  will-change: transform;
 }
 
 .noise-overlay--mobile::before,
@@ -383,6 +377,36 @@ svg:has(.arc:hover) .spinner {
 .mobile-nav-link:hover {
   color: #ffffff;
   background: rgba(255,255,255,0.05);
+}
+
+/* ==============================
+   MOBILE — hero image full screen
+   ============================== */
+@media (max-width: 767px) {
+  .hero-wrapper {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    width: 100%;
+  }
+
+  .image-layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .glitch {
+    width: 100%;
+    height: 100%;
+  }
+
+  .img {
+    object-fit: cover !important;
+    object-position: center top !important;
+  }
 }
 
 /* ==============================
