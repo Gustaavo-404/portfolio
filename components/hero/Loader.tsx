@@ -3,8 +3,10 @@
 import styles from "./Loader.module.css";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Loader({ onFinish }: { onFinish: () => void }) {
+    const { t: tx } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const [countdownFinished, setCountdownFinished] = useState(false);
     const [showCountdown, setShowCountdown] = useState(true);
@@ -57,33 +59,35 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
         const el = containerRef.current;
         if (!el) return;
 
+        const loaderData = tx.loader;
+
         el.innerHTML = `
-            <div class="it-ornament subtitle">✦ ✦ ✦</div>
+            <div class="it-ornament subtitle">${loaderData.ornament}</div>
 
             <div class="it-name cursive-el">
-                ${Array.from("Gustavo Barros").map(c =>
+                ${Array.from(loaderData.subjectName).map(c =>
             `<span class="it-char-name">${c === " " ? "&nbsp;" : c}</span>`
         ).join("")}
             </div>
 
             <div class="it-divider-wrap">
                 <div class="it-divider-line it-divider-left"></div>
-                <span class="it-presents subtitle">presents</span>
+                <span class="it-presents subtitle">${loaderData.presents}</span>
                 <div class="it-divider-line it-divider-right"></div>
             </div>
 
             <div class="it-title-wrap title">
-                ${Array.from("FULL STACK").map(c =>
+                ${Array.from(loaderData.titleLine1).map(c =>
             `<span class="it-char-title">${c === " " ? "&nbsp;" : c}</span>`
         ).join("")}
                 <br/>
-                ${Array.from("D.E.V.E.L.O.P.E.R.").map(c =>
+                ${Array.from(loaderData.titleLine2).map(c =>
             `<span class="it-char-title">${c}</span>`
         ).join("")}
             </div>
 
             <div class="it-portfolio-wrap subtitle">
-                ${Array.from("— Portfolio —").map(c =>
+                ${Array.from(loaderData.portfolioLabel).map(c =>
             `<span class="it-char-portfolio">${c === " " ? "&nbsp;" : c}</span>`
         ).join("")}
             </div>
@@ -93,7 +97,7 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
             </div>
 
             <div class="it-copyright subtitle">
-                ${Array.from("Copyright © 2026").map(c =>
+                ${Array.from(loaderData.copyright).map(c =>
             `<span class="it-char-copy">${c === " " ? "&nbsp;" : c}</span>`
         ).join("")}
             </div>
@@ -204,7 +208,7 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
             }, "+=0.1");
 
         return () => { mainTl.kill(); };
-    }, [countdownFinished, onFinish]);
+    }, [countdownFinished, onFinish, tx]);
 
     return (
         <div className="loader fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden">
