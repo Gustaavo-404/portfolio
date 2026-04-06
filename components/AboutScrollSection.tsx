@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +21,7 @@ const TECH_STACK = [
 
 export const AboutScrollSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
+  const { t } = useLanguage();
 
   useGSAP(() => {
     const titleElements = sectionRef.current?.querySelectorAll(".split-title");
@@ -40,14 +42,12 @@ export const AboutScrollSection = () => {
       },
     });
 
-    // Initial State Setup
     gsap.set([".split-title .char", ".split-desc .line", ".ornament-img", ".skill-card", ".detail-item", ".cursive-el"], { 
       opacity: 0, 
       y: 40,
       filter: "blur(15px)" 
     });
 
-    // --- SCENE 1: THE IDENTITY ---
     tl.to(".ornament-top", { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2 })
     .to(".cursive-intro", { opacity: 1, y: 0, filter: "blur(0px)" }, "-=0.8")
     .to(".title-1 .char", {
@@ -66,7 +66,6 @@ export const AboutScrollSection = () => {
     
     .to(".scene-1", { opacity: 0, y: -100, filter: "blur(30px)", duration: 1.5 }, "+=1.2")
 
-    // --- SCENE 2: THE CRAFT (ENGINEERING) ---
     .to(".scene-2", { 
         opacity: 1,
         onStart: () => { gsap.set(".scene-2", { display: "flex" }); }, 
@@ -77,7 +76,6 @@ export const AboutScrollSection = () => {
       filter: "blur(0px)",
       stagger: 0.03,
     })
-    // Animação dos Ícones e Cards
     .to(".skill-card", {
       opacity: 1,
       y: 0,
@@ -90,7 +88,6 @@ export const AboutScrollSection = () => {
 
     .to(".scene-2", { opacity: 0, scale: 1.15, filter: "blur(30px)", duration: 1.5 }, "+=1.2")
 
-    // --- SCENE 3: THE VISION (PHILOSOPHY) ---
     .to(".scene-3", { 
         opacity: 1,
         onStart: () => { gsap.set(".scene-3", { display: "flex" }); },
@@ -129,13 +126,14 @@ export const AboutScrollSection = () => {
         {/* SCENE 1: IDENTITY */}
         <div className="scene-1 absolute flex flex-col items-center text-center gap-4">
           <Image src="/images/ornament-top.png" alt="Ornament" width={450} height={100} className="ornament-top ornament-img mb-6 pointer-events-none invert opacity-40" />
-          <span className="cursive cursive-intro cursive-el text-3xl text-white mb-[-15px]">Full Stack Developer</span>
+          <span className="cursive cursive-intro cursive-el text-3xl text-white mb-[-15px]">{t.about.cursiveIntro}</span>
           <h2 className="title split-title title-1 text-7xl md:text-[11rem] uppercase leading-none tracking-tighter text-stone-200">
-            Gustavo Barros
+            {t.about.name}
           </h2>
           <p className="subtitle split-desc desc-1 text-xs md:text-sm tracking-[0.4em] uppercase opacity-60 max-w-2xl leading-relaxed">
-            Full Stack Developer & Systems Analyst. <br/> 
-            Transforming binary logic into timeless digital experiences.
+            {t.about.descIdentity.split("\n").map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
           </p>
         </div>
 
@@ -143,17 +141,17 @@ export const AboutScrollSection = () => {
         <div className="scene-2 absolute hidden flex-col items-center text-center gap-12">
           <div className="flex gap-16 mb-2">
             <div className="detail-item flex flex-col items-center text-center border-l border-white/10 pl-6">
-              <span className="subtitle text-[9px] uppercase tracking-[0.2em] text-stone-300">Core Expertise</span>
-              <span className="subtitle text-xs uppercase tracking-widest mt-1">Full Stack Systems</span>
+              <span className="subtitle text-[9px] uppercase tracking-[0.2em] text-stone-300">{t.about.detailCoreExpertiseLabel}</span>
+              <span className="subtitle text-xs uppercase tracking-widest mt-1">{t.about.detailCoreExpertiseValue}</span>
             </div>
             <div className="detail-item flex flex-col items-center text-center border-l border-white/10 pl-6">
-              <span className="subtitle text-[9px] uppercase tracking-[0.2em] text-stone-300">Development</span>
-              <span className="subtitle text-xs uppercase tracking-widest mt-1">Robust Architecture</span>
+              <span className="subtitle text-[9px] uppercase tracking-[0.2em] text-stone-300">{t.about.detailDevelopmentLabel}</span>
+              <span className="subtitle text-xs uppercase tracking-widest mt-1">{t.about.detailDevelopmentValue}</span>
             </div>
           </div>
           
           <h2 className="title split-title title-2 text-6xl md:text-9xl uppercase tracking-tighter text-stone-200">
-            The Craft
+            {t.about.sceneTitle2}
           </h2>
           
           <div className="flex flex-wrap justify-center gap-6 max-w-4xl px-4">
@@ -178,16 +176,16 @@ export const AboutScrollSection = () => {
         {/* SCENE 3: PHILOSOPHY */}
         <div className="scene-3 absolute hidden flex-col items-center text-center gap-8">
           <h2 className="title split-title title-3 text-6xl md:text-9xl uppercase tracking-tighter text-stone-200">
-            The Vision
+            {t.about.sceneTitle3}
           </h2>
           <div className="max-w-3xl space-y-8">
             <p className="split-desc desc-3 subtitle text-[11px] md:text-xs tracking-[0.25em] uppercase leading-[2.2] opacity-80 text-stone-300">
-              In a world of noise, I choose precision. <br/> 
-              Design is the bridge between human emotion and machine logic. <br/> 
-              My mission is to build software that feels as solid as it performs.
+              {t.about.visionText.split("\n").map((line, i, arr) => (
+                <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+              ))}
             </p>
             <div className="cursive-signature cursive cursive-el text-5xl text-stone-100 pt-6">
-              Gustavo M. de Barros
+              {t.about.cursiveSignature}
             </div>
           </div>
           <Image src="/images/ornament-bottom.png" alt="Ornament" width={450} height={100} className="ornament-bottom ornament-img mt-8 pointer-events-none invert opacity-40" />
@@ -196,14 +194,14 @@ export const AboutScrollSection = () => {
 
       {/* Editorial Layout Decorative Elements */}
       <div className="absolute left-10 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-32 opacity-20 z-30">
-          <div className="rotate-90 origin-left subtitle text-[9px] tracking-[0.6em] uppercase whitespace-nowrap">Full Stack</div>
-          <div className="rotate-90 origin-left subtitle text-[9px] tracking-[0.6em] uppercase whitespace-nowrap text-stone-400">Mococa - SP, BR</div>
+          <div className="rotate-90 origin-left subtitle text-[9px] tracking-[0.6em] uppercase whitespace-nowrap">{t.about.sidebarLeft1}</div>
+          <div className="rotate-90 origin-left subtitle text-[9px] tracking-[0.6em] uppercase whitespace-nowrap text-stone-400">{t.about.sidebarLeft2}</div>
       </div>
 
       {/* Footer Info */}
       <div className="absolute right-12 bottom-12 flex flex-col items-end opacity-20 z-30">
-        <span className="subtitle text-[9px] tracking-[0.4em] uppercase">Ref. Code: 01-BRL-ARCHIVE</span>
-        <span className="title text-2xl mt-1 text-stone-300">M.M.XXVI</span>
+        <span className="subtitle text-[9px] tracking-[0.4em] uppercase">{t.about.footerRef}</span>
+        <span className="title text-2xl mt-1 text-stone-300">{t.about.footerDate}</span>
       </div>
     </section>
   );
