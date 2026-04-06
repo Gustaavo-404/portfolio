@@ -241,7 +241,7 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
                 ref={containerRef}
                 className={`intertitle relative z-10 flex flex-col items-center text-center transition-opacity duration-300 ${!countdownFinished ? "opacity-0" : "opacity-100"
                     }`}
-                style={{ width: "62%", maxWidth: "640px" }}
+                style={{ width: "clamp(260px, 88vw, 640px)" }}
             />
 
             {/* TEXTURE */}
