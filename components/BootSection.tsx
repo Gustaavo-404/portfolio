@@ -7,11 +7,11 @@ import styles from "./BootSection.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SPRITE_COLS = 6;
-const SPRITE_ROWS = 6;
-const SPRITE_WIDTH = 2028 / SPRITE_COLS;
+const SPRITE_COLS   = 6;
+const SPRITE_ROWS   = 6;
+const SPRITE_WIDTH  = 2028 / SPRITE_COLS;
 const SPRITE_HEIGHT = 3240 / SPRITE_ROWS;
-const START_FRAME = 18;
+const START_FRAME   = 18;
 const ACTIVE_FRAMES = 18;
 
 const DEFAULT_DESCRIPTION =
@@ -84,7 +84,7 @@ const PROJECTS: Project[] = [
   },
   {
     name: "Old Portfolio",
-    tag: "ARCHIVE",
+    tag: "ARC",
     logo: "/images/logos/old-portfolio.png",
     screenshots: ["/images/screenshots/old-portfolio1.png", "/images/screenshots/old-portfolio2.png", "/images/screenshots/old-portfolio3.png"],
     stack: ["React", "Three.js", "GSAP"],
@@ -110,35 +110,34 @@ const PROJECTS: Project[] = [
 ];
 
 export const BootSection = () => {
-  const sectionRef     = useRef<HTMLElement>(null);
-  const textRef        = useRef<HTMLDivElement>(null);
-  const noiseRef       = useRef<HTMLDivElement>(null);
-  const scanlinesRef   = useRef<HTMLDivElement>(null);
-  const bgRef          = useRef<HTMLDivElement>(null);
-  const spriteRef      = useRef<HTMLDivElement>(null);
-  const pipboyRef      = useRef<HTMLDivElement>(null);
-  const logoRef        = useRef<HTMLImageElement>(null);
-  const spriteWrapRef  = useRef<HTMLDivElement>(null);
-  const centerInnerRef   = useRef<HTMLDivElement>(null);
-  const expandedBodyRef  = useRef<HTMLDivElement>(null);  // animates on project switch
-  const prevProjectRef   = useRef<string | null>(null);   // tracks last selected
+  const sectionRef      = useRef<HTMLElement>(null);
+  const textRef         = useRef<HTMLDivElement>(null);
+  const noiseRef        = useRef<HTMLDivElement>(null);
+  const scanlinesRef    = useRef<HTMLDivElement>(null);
+  const bgRef           = useRef<HTMLDivElement>(null);
+  const spriteRef       = useRef<HTMLDivElement>(null);
+  const pipboyRef       = useRef<HTMLDivElement>(null);
+  const logoRef         = useRef<HTMLImageElement>(null);
+  const spriteWrapRef   = useRef<HTMLDivElement>(null);
+  const centerInnerRef  = useRef<HTMLDivElement>(null);
+  const expandedBodyRef = useRef<HTMLDivElement>(null);
+  const prevProjectRef  = useRef<string | null>(null);
 
-  const logoAnimRef      = useRef<gsap.core.Tween[]>([]);
-  const currentHoverRef  = useRef<string | null>(null);
+  const logoAnimRef     = useRef<gsap.core.Tween[]>([]);
+  const currentHoverRef = useRef<string | null>(null);
 
   const [hoveredProject, setHoveredProject]   = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen]           = useState(false);
 
-  // Lightbox state
   const [lightboxOpen, setLightboxOpen]   = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const lightboxImgRef = useRef<HTMLImageElement>(null);
 
-  const hoveredData  = hoveredProject  ? PROJECTS.find((p) => p.name === hoveredProject)  ?? null : null;
-  const selectedData = selectedProject ? PROJECTS.find((p) => p.name === selectedProject) ?? null : null;
+  const hoveredData    = hoveredProject  ? PROJECTS.find((p) => p.name === hoveredProject)  ?? null : null;
+  const selectedData   = selectedProject ? PROJECTS.find((p) => p.name === selectedProject) ?? null : null;
   const displayProject = hoveredData ?? selectedData;
 
-  // Animate the expanded body out, then clear the selection
   const closeExpanded = () => {
     if (expandedBodyRef.current) {
       gsap.to(expandedBodyRef.current, {
@@ -154,126 +153,103 @@ export const BootSection = () => {
   };
 
   const handleProjectClick = (name: string) => {
+    setDrawerOpen(false);
     setSelectedProject((prev) => {
-      if (prev === name) {
-        // Toggle off
-        prevProjectRef.current = null;
-        return null;
-      }
-
+      if (prev === name) { prevProjectRef.current = null; return null; }
       if (prev !== null && expandedBodyRef.current) {
-        // Already open — slide out current, then swap state + slide in new
         const fromIdx = PROJECTS.findIndex((p) => p.name === prev);
         const toIdx   = PROJECTS.findIndex((p) => p.name === name);
-        const dir     = toIdx > fromIdx ? 1 : -1; // 1 = slide left, -1 = slide right
-
+        const dir     = toIdx > fromIdx ? 1 : -1;
         gsap.to(expandedBodyRef.current, {
-          x: -dir * 48,
-          opacity: 0,
-          duration: 0.18,
-          ease: "power2.in",
+          x: -dir * 48, opacity: 0, duration: 0.18, ease: "power2.in",
           onComplete: () => {
             prevProjectRef.current = name;
             setSelectedProject(name);
-            // Slide in from opposite side
-            gsap.fromTo(
-              expandedBodyRef.current,
+            gsap.fromTo(expandedBodyRef.current,
               { x: dir * 48, opacity: 0 },
               { x: 0, opacity: 1, duration: 0.22, ease: "power3.out" }
             );
           },
         });
-        return prev; // hold current while animating out
+        return prev;
       }
-
       prevProjectRef.current = name;
       return name;
     });
   };
 
-  // ── Lightbox helpers ──
-  const openLightbox = useCallback((index: number) => {
-    setLightboxIndex(index);
-    setLightboxOpen(true);
-  }, []);
-
-  const closeLightbox = useCallback(() => setLightboxOpen(false), []);
-
+  const openLightbox     = useCallback((index: number) => { setLightboxIndex(index); setLightboxOpen(true); }, []);
+  const closeLightbox    = useCallback(() => setLightboxOpen(false), []);
   const navigateLightbox = useCallback((dir: 1 | -1) => {
     if (!selectedData) return;
     const total = selectedData.screenshots.length;
     setLightboxIndex((prev) => {
       const next = (prev + dir + total) % total;
-      // Crossfade the image
-      if (lightboxImgRef.current) {
-        gsap.fromTo(lightboxImgRef.current,
-          { opacity: 0, x: dir * 20 },
-          { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" }
-        );
-      }
+      if (lightboxImgRef.current)
+        gsap.fromTo(lightboxImgRef.current, { opacity: 0, x: dir * 20 }, { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" });
       return next;
     });
   }, [selectedData]);
 
-  // ── Logo swap ──
+  // Logo swap
   useEffect(() => {
     if (!logoRef.current || !spriteWrapRef.current) return;
     logoAnimRef.current.forEach((t) => t.kill());
     logoAnimRef.current = [];
-
     if (displayProject) {
       logoRef.current.src = displayProject.logo;
-      const t1 = gsap.to(spriteWrapRef.current, { opacity: 0, duration: 0.15, ease: "power2.out" });
-      const t2 = gsap.fromTo(logoRef.current,
-        { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }
-      );
-      logoAnimRef.current = [t1, t2];
+      logoAnimRef.current = [
+        gsap.to(spriteWrapRef.current, { opacity: 0, duration: 0.15, ease: "power2.out" }),
+        gsap.fromTo(logoRef.current, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }),
+      ];
     } else {
-      const t1 = gsap.to(logoRef.current, {
-        opacity: 0, scale: 0.92, duration: 0.15, ease: "power2.in",
-        onComplete: () => {
-          if (!currentHoverRef.current) {
-            const t2 = gsap.to(spriteWrapRef.current, { opacity: 1, duration: 0.2, ease: "power2.out" });
-            logoAnimRef.current.push(t2);
-          }
-        },
-      });
-      logoAnimRef.current = [t1];
+      logoAnimRef.current = [
+        gsap.to(logoRef.current, {
+          opacity: 0, scale: 0.92, duration: 0.15, ease: "power2.in",
+          onComplete: () => {
+            if (!currentHoverRef.current) {
+              const t = gsap.to(spriteWrapRef.current, { opacity: 1, duration: 0.2, ease: "power2.out" });
+              logoAnimRef.current.push(t);
+            }
+          },
+        }),
+      ];
     }
   }, [displayProject]);
 
   useEffect(() => { currentHoverRef.current = hoveredProject; }, [hoveredProject]);
 
-  // ── Expand center ──
+  // Center expand (desktop only)
   useEffect(() => {
     if (!centerInnerRef.current) return;
-    gsap.to(centerInnerRef.current, {
-      maxWidth: selectedData ? "780px" : "480px",
-      duration: 0.42, ease: "power3.inOut",
-    });
+    if (window.innerWidth >= 1024) {
+      gsap.to(centerInnerRef.current, {
+        maxWidth: selectedData ? "780px" : "480px",
+        duration: 0.42, ease: "power3.inOut",
+      });
+    }
   }, [selectedData]);
 
-  // ── Keyboard ──
+  // Keyboard
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
       if (lightboxOpen) {
-        if (e.key === "Escape")      closeLightbox();
-        if (e.key === "ArrowRight")  navigateLightbox(1);
-        if (e.key === "ArrowLeft")   navigateLightbox(-1);
+        if (e.key === "Escape")     closeLightbox();
+        if (e.key === "ArrowRight") navigateLightbox(1);
+        if (e.key === "ArrowLeft")  navigateLightbox(-1);
       } else {
-        if (e.key === "Escape") closeExpanded();
+        if (e.key === "Escape") drawerOpen ? setDrawerOpen(false) : closeExpanded();
       }
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
-  }, [lightboxOpen, closeLightbox, navigateLightbox]);
+  }, [lightboxOpen, closeLightbox, navigateLightbox, drawerOpen]);
 
-  // ── Main GSAP setup ──
+  // Main GSAP
   useEffect(() => {
     if (!sectionRef.current || !textRef.current) return;
 
-    gsap.set(textRef.current,  { autoAlpha: 0, zIndex: 40, pointerEvents: "none" });
+    gsap.set(textRef.current,   { autoAlpha: 0, zIndex: 40, pointerEvents: "none" });
     gsap.set(pipboyRef.current, { clipPath: "inset(50% 0 50% 0)", opacity: 0, pointerEvents: "none" });
 
     const heroNoise = document.querySelector('[class*="noise-overlay"]');
@@ -294,24 +270,21 @@ export const BootSection = () => {
         const p = self.progress;
         if (p < 0.15) {
           gsap.set(bgRef.current, { backgroundColor: "#000000" });
-          gsap.to(noiseRef.current,    { autoAlpha: 1, duration: 0.1 });
+          gsap.to(noiseRef.current,     { autoAlpha: 1, duration: 0.1 });
           gsap.to(scanlinesRef.current, { autoAlpha: 1, duration: 0.1 });
         } else if (p < 0.38) {
           const t = (p - 0.15) / 0.23;
-          gsap.to(bgRef.current,       { backgroundColor: "#041f14", duration: 0.1 });
-          gsap.to(noiseRef.current,    { autoAlpha: 1 - t, duration: 0.1 });
+          gsap.to(bgRef.current,        { backgroundColor: "#041f14", duration: 0.1 });
+          gsap.to(noiseRef.current,     { autoAlpha: 1 - t, duration: 0.1 });
           gsap.to(scanlinesRef.current, { autoAlpha: 1 - t, duration: 0.1 });
         } else {
-          gsap.to(bgRef.current,       { backgroundColor: "#020f08", duration: 0.2 });
-          gsap.to(noiseRef.current,    { autoAlpha: 0, duration: 0.2 });
+          gsap.to(bgRef.current,        { backgroundColor: "#020f08", duration: 0.2 });
+          gsap.to(noiseRef.current,     { autoAlpha: 0, duration: 0.2 });
           gsap.to(scanlinesRef.current, { autoAlpha: 0, duration: 0.2 });
         }
       },
     });
 
-    // ── CONNECTION FOUND — simplified, smooth, no glow ────────────
-    // Approach: chars fade + slide in staggered by scroll progress.
-    // No glitch chars, no setInterval, fully deterministic.
     const TARGET = "CONNECTION FOUND";
     let ci = 0;
     textRef.current.innerHTML = TARGET.split("")
@@ -337,46 +310,31 @@ export const BootSection = () => {
       onUpdate: (self) => {
         const p = self.progress;
 
-        // ── Reveal: each char fades + slides in as scroll progresses ──
         if (p >= P_REVEAL_START && p < P_HOLD_END) {
           gsap.set(textRef.current, { autoAlpha: 1, y: 0, scale: 1, opacity: 1 });
           const range = P_REVEAL_END - P_REVEAL_START;
-
           chars.forEach((ch, i) => {
-            // Each char has its own threshold staggered across the reveal range
             const threshold = P_REVEAL_START + (i / chars.length) * range;
             const localP    = Math.min(1, Math.max(0, (p - threshold) / 0.08));
-            gsap.set(ch, {
-              opacity: localP,
-              y: (1 - localP) * 18,
-            });
+            gsap.set(ch, { opacity: localP, y: (1 - localP) * 18 });
           });
         }
 
-        // ── Hold: all chars fully visible ──
-        if (p >= P_REVEAL_END && p < P_HOLD_END) {
+        if (p >= P_REVEAL_END && p < P_HOLD_END)
           chars.forEach((ch) => gsap.set(ch, { opacity: 1, y: 0 }));
-        }
 
-        // ── Exit: chars shake + flicker, whole text fades up ──
         if (p >= P_HOLD_END && p < P_EXIT_END) {
-          const exit = (p - P_HOLD_END) / (P_EXIT_END - P_HOLD_END);
-          const e    = exit * exit * (3 - 2 * exit); // smoothstep
-
-          // Per-char deterministic shake + flicker.
-          // sin/cos with char index as seed and p as time — fully scrub-safe.
-          const intensity = exit * exit; // ramps up toward end
+          const exit      = (p - P_HOLD_END) / (P_EXIT_END - P_HOLD_END);
+          const e         = exit * exit * (3 - 2 * exit);
+          const intensity = exit * exit;
           chars.forEach((ch, i) => {
-            const seed   = i * 1.7;
-            const noiseX = Math.sin(seed + p * 80) * 5 * intensity;
-            const noiseY = Math.cos(seed * 0.9 + p * 60) * 4 * intensity;
-            // Each char flickers at its own phase
+            const seed    = i * 1.7;
+            const noiseX  = Math.sin(seed + p * 80) * 5 * intensity;
+            const noiseY  = Math.cos(seed * 0.9 + p * 60) * 4 * intensity;
             const flicker = Math.sin(seed * 3.1 + p * 140) > (0.4 - intensity * 0.8)
-              ? 1
-              : Math.max(0, 1 - intensity * 1.2);
+              ? 1 : Math.max(0, 1 - intensity * 1.2);
             gsap.set(ch, { x: noiseX, y: noiseY, opacity: flicker });
           });
-
           gsap.set(textRef.current, {
             autoAlpha: 1 - e * 0.85,
             y: -e * (typeof window !== "undefined" ? window.innerHeight / 10 : 80),
@@ -384,9 +342,7 @@ export const BootSection = () => {
           });
         }
 
-        // ── Pip-boy reveal ──
         const P_CLOSE_START = 0.88;
-        const P_CLOSE_END   = 0.97;
         if (p >= P_EXIT_END && p < P_CLOSE_START) {
           gsap.set(textRef.current, { autoAlpha: 0, pointerEvents: "none" });
           const pipP = Math.min(1, (p - P_EXIT_END) / (P_PIP_END - P_EXIT_END));
@@ -397,7 +353,6 @@ export const BootSection = () => {
           });
         }
 
-        // ── Bars ──
         if (p >= 0.78) {
           document.querySelectorAll(`.${styles.fill}`).forEach((el) => { (el as HTMLElement).style.width = "100%"; });
           const targets = ["78%", "92%", "65%"];
@@ -406,7 +361,6 @@ export const BootSection = () => {
           });
         }
 
-        // ── Reset ──
         if (p < 0.03) {
           gsap.set(textRef.current, { autoAlpha: 0, y: 0, scale: 1, opacity: 1 });
           chars.forEach((ch) => gsap.set(ch, { opacity: 0, y: 18, x: 0 }));
@@ -414,7 +368,7 @@ export const BootSection = () => {
       },
     });
 
-    // ── Sprite ────────────────────────────────────────────────────
+    // Sprite animation
     if (spriteRef.current) {
       let frame = 0, lastTime = 0;
       const interval = 1000 / 25;
@@ -453,60 +407,32 @@ export const BootSection = () => {
         <div ref={textRef} className={`${styles.terminal} title`} />
       </div>
 
-      {/* ── LIGHTBOX ── */}
+      {/* LIGHTBOX */}
       {lightboxOpen && selectedData && (
         <div className={styles.lightboxOverlay} onClick={closeLightbox}>
-          {/* Prev */}
-          <button
-            className={`${styles.lightboxArrow} ${styles.lightboxArrowLeft}`}
-            onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }}
-            aria-label="Previous"
-          >
-            ‹
-          </button>
-
-          {/* Image */}
+          <button className={`${styles.lightboxArrow} ${styles.lightboxArrowLeft}`}
+            onClick={(e) => { e.stopPropagation(); navigateLightbox(-1); }} aria-label="Previous">‹</button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            ref={lightboxImgRef}
-            src={selectedData.screenshots[lightboxIndex]}
-            alt={`Screenshot ${lightboxIndex + 1}`}
-            className={styles.lightboxImg}
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          {/* Next */}
-          <button
-            className={`${styles.lightboxArrow} ${styles.lightboxArrowRight}`}
-            onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }}
-            aria-label="Next"
-          >
-            ›
-          </button>
-
-          {/* Counter + close */}
+          <img ref={lightboxImgRef} src={selectedData.screenshots[lightboxIndex]}
+            alt={`Screenshot ${lightboxIndex + 1}`} className={styles.lightboxImg}
+            onClick={(e) => e.stopPropagation()} />
+          <button className={`${styles.lightboxArrow} ${styles.lightboxArrowRight}`}
+            onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }} aria-label="Next">›</button>
           <div className={styles.lightboxMeta} onClick={(e) => e.stopPropagation()}>
             <span className={styles.lightboxCounter}>
               {String(lightboxIndex + 1).padStart(2, "0")} / {String(selectedData.screenshots.length).padStart(2, "0")}
             </span>
             <button className={styles.lightboxClose} onClick={closeLightbox} aria-label="Close">✕</button>
           </div>
-
-          {/* Dot indicators */}
           <div className={styles.lightboxDots} onClick={(e) => e.stopPropagation()}>
             {selectedData.screenshots.map((_, i) => (
-              <button
-                key={i}
+              <button key={i}
                 className={`${styles.lightboxDot} ${i === lightboxIndex ? styles.lightboxDotActive : ""}`}
                 onClick={() => {
                   const dir = i > lightboxIndex ? 1 : -1;
                   setLightboxIndex(i);
-                  if (lightboxImgRef.current) {
-                    gsap.fromTo(lightboxImgRef.current,
-                      { opacity: 0, x: dir * 20 },
-                      { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" }
-                    );
-                  }
+                  if (lightboxImgRef.current)
+                    gsap.fromTo(lightboxImgRef.current, { opacity: 0, x: dir * 20 }, { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" });
                 }}
                 aria-label={`Screenshot ${i + 1}`}
               />
@@ -520,12 +446,44 @@ export const BootSection = () => {
         <div className={styles.gridLines} />
         <div className={styles.vignette} />
 
-        {/* MAIN */}
         <div className={styles.mainContent}>
           <div className={styles.scanlineOverlay} />
 
-          {/* LEFT PANEL */}
-          <div className={styles.leftPanel}>
+          {/* ── MOBILE LOGO BAR (replaces left panel entirely on mobile) ── */}
+          <div className={styles.mobileLogoBar}>
+            <div className={styles.mobileLogoBarLabel}>▸ PROJECTS</div>
+            <div className={styles.mobileLogoScroll}>
+              {PROJECTS.map((p) => (
+                <button
+                  key={p.name}
+                  className={`${styles.mobileLogoBtn} ${selectedProject === p.name ? styles.mobileLogoBtnActive : ""}`}
+                  onClick={() => handleProjectClick(p.name)}
+                  aria-label={p.name}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.logo} alt={p.name} className={styles.mobileLogoBtnImg} />
+                  <span className={styles.mobileLogoBtnTag}>{p.tag}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Drawer toggle — tablet only */}
+          <button
+            className={`${styles.drawerToggle} ${drawerOpen ? styles.drawerToggleOpen : ""}`}
+            onClick={() => setDrawerOpen((v) => !v)}
+            aria-label="Toggle project list"
+          >
+            {drawerOpen ? "◀" : "▶"}
+            <span className={styles.drawerToggleLabel}>LOG</span>
+          </button>
+
+          {drawerOpen && (
+            <div className={styles.drawerBackdrop} onClick={() => setDrawerOpen(false)} />
+          )}
+
+          {/* LEFT PANEL — desktop always, tablet as drawer */}
+          <div className={`${styles.leftPanel} ${drawerOpen ? styles.leftPanelDrawerOpen : ""}`}>
             <div className={styles.panelTitle}>▸ PROJECTS LOG</div>
             <div className={styles.projectsList}>
               <ul>
@@ -565,8 +523,7 @@ export const BootSection = () => {
             <div className={styles.radarRing} />
 
             <div ref={centerInnerRef} className={styles.centerInner}>
-
-              {/* Default / hover view */}
+              {/* Default view */}
               <div className={`${styles.defaultView} ${selectedData ? styles.defaultViewHidden : ""}`}>
                 <div className={styles.spriteWrapper}>
                   <div className={styles.spriteFrame} />
@@ -590,7 +547,7 @@ export const BootSection = () => {
                 {!selectedData && <p className={styles.spriteHint}>[ CLICK TO ACCESS SCHEMATICS ]</p>}
               </div>
 
-              {/* Expanded / selected view */}
+              {/* Expanded view */}
               <div className={`${styles.expandedView} ${selectedData ? styles.expandedViewVisible : ""}`}>
                 {selectedData && (
                   <div ref={expandedBodyRef} className={styles.expandedBody}>
@@ -611,14 +568,9 @@ export const BootSection = () => {
                       <button className={styles.closeBtn} onClick={closeExpanded} aria-label="Close">✕</button>
                     </div>
 
-                    {/* Screenshots with lightbox trigger */}
                     <div className={styles.screenshotsGrid}>
                       {selectedData.screenshots.map((src, i) => (
-                        <div
-                          key={i}
-                          className={styles.screenshotWrap}
-                          onClick={() => openLightbox(i)}
-                        >
+                        <div key={i} className={styles.screenshotWrap} onClick={() => openLightbox(i)}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={src} alt={`screenshot ${i + 1}`} className={styles.screenshot} />
                           <span className={styles.screenshotLabel}>SCR-{String(i + 1).padStart(2, "0")}</span>
