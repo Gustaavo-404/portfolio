@@ -408,7 +408,7 @@ export const BootSection = () => {
   ];
 
   return (
-    <section ref={sectionRef} className="boot-section relative w-full h-screen">
+    <section ref={sectionRef} className="boot-section relative w-full h-screen" id="BootSection">
       <div ref={bgRef} className="absolute inset-0 z-0 pointer-events-none" />
       <div ref={noiseRef} className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay"
         style={{ backgroundImage: "url('/images/noise.png')", backgroundSize: "200px" }} />

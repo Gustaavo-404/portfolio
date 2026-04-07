@@ -34,6 +34,24 @@ export default function Hero() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  // ================= SCROLL HELPER =================
+  const scrollToSection = (key: string) => {
+    const sectionMap: Record<string, string> = {
+      about:    "AboutScrollSection",
+      stack:    "JournalSection",
+      projects: "BootSection",
+      contact:  "ContactSection",
+    };
+
+    const id = sectionMap[key];
+    if (!id) return;
+
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   useEffect(() => {
     // ================= GSAP =================
     const ctx = gsap.context(() => {
@@ -453,7 +471,11 @@ export default function Hero() {
                 key={item.id}
                 href={`#${item.key}`}
                 className={styles["mobile-nav-link"]}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  scrollToSection(item.key);
+                }}
               >
                 {tx.hero.nav[item.key as keyof typeof tx.hero.nav]}
               </a>
@@ -483,7 +505,11 @@ export default function Hero() {
               </defs>
 
               {navItems.map((item) => (
-                <g key={item.id}>
+                <g
+                  key={item.id}
+                  onClick={() => scrollToSection(item.key)}
+                  style={{ cursor: "pointer" }}
+                >
                   <use href={`#${item.id}`} className={styles.arc} />
                   <text className={`${styles["arc-text"]} ${styles.title}`}>
                     <textPath

@@ -62,7 +62,7 @@ export const JournalSection = () => {
   }, { scope: containerRef });
  
   return (
-    <section ref={containerRef} className={`relative h-screen w-full bg-[#0c0c0c] overflow-hidden flex items-center justify-center ${styles.journalSection}`}>
+    <section ref={containerRef} className={`relative h-screen w-full bg-[#0c0c0c] overflow-hidden flex items-center justify-center ${styles.journalSection}`} id="JournalSection">
       <div className={styles.paperTexture} />
       <div className={styles.pageWrapper}>
  

@@ -118,6 +118,7 @@ export const AboutScrollSection = () => {
     <section
       ref={sectionRef}
       className="relative h-screen w-full bg-[#0c0c0c] text-white overflow-hidden flex items-center justify-center font-serif"
+      id="AboutScrollSection"
     >
       <div className="absolute inset-0 opacity-[0.06] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] z-10"></div>
 

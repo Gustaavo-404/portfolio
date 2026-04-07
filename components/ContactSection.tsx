@@ -178,7 +178,7 @@ export const ContactSection = () => {
   ];
 
   return (
-    <section ref={sectionRef} className={styles.section}>
+    <section ref={sectionRef} className={styles.section} id="ContactSection">
       <div className={styles.scanlines} />
       <div className={styles.noise} style={{ backgroundImage: "url('/images/noise.png')", backgroundSize: "200px" }} />
 
