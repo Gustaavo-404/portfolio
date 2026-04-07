@@ -144,7 +144,7 @@ const translations = {
       spriteLabel: "◆ INTERFACE DE PROJETOS ◆",
       spriteTitle: "TERMINAL DO DESENVOLVEDOR",
       spriteDefaultDesc:
-        "Uma seleção curada de construtos digitais erguidos no wasteland. Passe o cursor sobre um projeto para acessar esquemáticos e dados da missão.",
+        "Uma seleção curada de projetos. Passe o cursor sobre um projeto para acessar esquemáticos e dados da missão.",
       spriteHint: "[ CLIQUE PARA ACESSAR ESQUEMÁTICOS ]",
       closeBtnLabel: "Fechar",
 
@@ -196,7 +196,7 @@ const translations = {
         },
         ExpertInvest: {
           description:
-            "Plataforma full-stack de otimização de investimentos implementando alocação de portfólio pelo método Simplex via PuLP.",
+            "Plataforma full-stack de otimização de investimentos implementando alocação de investimento pelo método Simplex via PuLP.",
           problem:
             "A alocação de portfólio geralmente é guiada pela intuição em vez de matemática, levando a razões risco/retorno subótimas.",
           result:
@@ -208,7 +208,7 @@ const translations = {
           problem:
             "Aplicativos genéricos de fitness ignoram biomarcadores individuais, entregando conselhos padronizados que falham para a maioria dos usuários.",
           result:
-            "Plataforma de saúde gerando metas diárias personalizadas — hidratação, sono, dieta — com sistema de sequência estilo Duolingo para impulsionar o engajamento diário.",
+            "Plataforma de saúde gerando metas diárias personalizadas — hidratação, sono, dieta — com sistema de ofensiva (sequência) para impulsionar o engajamento diário.",
         },
         "Old Portfolio": {
           description:
@@ -234,7 +234,7 @@ const translations = {
       spriteLabel: "◆ PROJECTS INTERFACE ◆",
       spriteTitle: "DEVELOPER TERMINAL",
       spriteDefaultDesc:
-        "A curated selection of digital constructs built in the wasteland. Hover a project from the log to access schematics and mission data.",
+        "A curated selection of projects. Hover a project from the log to access schematics and mission data.",
       spriteHint: "[ CLICK TO ACCESS SCHEMATICS ]",
       closeBtnLabel: "Close",
 
@@ -292,7 +292,7 @@ const translations = {
           problem:
             "Generic fitness apps ignore individual biometrics, delivering one-size-fits-all advice that fails most users.",
           result:
-            "Health platform generating personalized daily targets — hydration, sleep, diet — based on user profile, with a Duolingo-style streak system to drive daily engagement.",
+            "Health platform generating personalized daily targets — hydration, sleep, diet — based on user profile, with a streak system to drive daily engagement.",
         },
         "Old Portfolio": {
           description:
@@ -512,7 +512,7 @@ const translations = {
       p3CurrentOp:         "Operação Atual",
       p3CurrentOpValue:    "Sistema SaaS de Analytics",
       p3SituationLabel:    "Situação",
-      p3SituationValue:    "Aberto para trabalho",
+      p3SituationValue:    "Disponível para trabalho",
       p3KernelLabel:       "[ LOG_DO_KERNEL_DO_SISTEMA ]",
       p3CpuUsage:          "USO_CPU:",
       p3CpuValue:          "OTIMIZADO",
@@ -674,7 +674,7 @@ const translations = {
       watermark:       "TOP SECRET",
 
       signposts: [
-        { year: "2019", text: "EM 2019 DESCOBRI MINHA PAIXÃO POR PROGRAMAÇÃO E ARQUITETURA DE SOFTWARE" },
+        { year: "2019", text: "EM 2019 DESCOBRI MEU INTERESSE POR PROGRAMAÇÃO E ARQUITETURA DE SOFTWARE" },
         { year: "2020", text: "EM 2020 INICIEI O ENSINO TÉCNICO EM DESENVOLVIMENTO WEB NA ETEC" },
         { year: "2023", text: "EM 2023 ME MATRICULEI EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS NA FATEC" },
       ],

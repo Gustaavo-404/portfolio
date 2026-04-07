@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,13 +15,6 @@ const FRAME_WIDTH  = 2028 / COLS;  // 338px
 const FRAME_HEIGHT = 3240 / ROWS;  // 540px
 const CYCLES       = 4;
 const TRACK_MULT   = 4; // track is 400vw
-
-// ── Content ──
-const SIGNPOSTS = [
-    { position: "12.5%", year: "2019", text: "IN 2019 I DISCOVERED MY PASSION FOR PROGRAMMING AND SOFTWARE ARCHITECTURE" },
-    { position: "37.5%", year: "2020", text: "IN 2020 STARTED MY TECHNICAL HIGH SCHOOL DEGREE IN WEB DEVELOPMENT AT ETEC" },
-    { position: "62.5%", year: "2023", text: "IN 2023 ENROLLED IN SYSTEMS ANALYSIS AND DEVELOPMENT AT FATEC COLLEGE" },
-];
 
 const YEAR_THRESHOLDS = [
     { from: 0,    to: 0.26, year: "2019" },
@@ -110,6 +104,7 @@ const Compass = ({
                     <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />
                 ))}
             </svg>
+            {/* BEARING is a compass direction label — intentionally not translated */}
             <div style={{ textAlign: "center", fontFamily: "monospace", fontSize: 7, letterSpacing: "0.14em", color: "rgba(0,0,0,0.28)", marginTop: 2 }}>
                 BEARING
             </div>
@@ -117,7 +112,7 @@ const Compass = ({
     );
 };
 
-const Ruler = ({ progress, isMobile }: { progress: number; isMobile: boolean }) => {
+const Ruler = ({ progress, isMobile, kmLabel }: { progress: number; isMobile: boolean; kmLabel: string }) => {
     const TICKS  = isMobile ? 30 : 60;
     const active = Math.round(progress * TICKS);
     const margin = isMobile ? 8 : 40;
@@ -149,19 +144,19 @@ const Ruler = ({ progress, isMobile }: { progress: number; isMobile: boolean }) 
             </div>
             {!isMobile && (
                 <div style={{ position: "absolute", top: 0, right: -22, fontFamily: "monospace", fontSize: 6, letterSpacing: "0.08em", color: "rgba(0,0,0,0.25)", lineHeight: 1 }}>
-                    KM
+                    {kmLabel}
                 </div>
             )}
         </div>
     );
 };
 
-const YearDisplay = ({ year, isMobile }: { year: string; isMobile: boolean }) => (
+const YearDisplay = ({ year, isMobile, yearLabel }: { year: string; isMobile: boolean; yearLabel: string }) => (
     <div className="absolute z-50 pointer-events-none select-none"
         style={{ top: isMobile ? 10 : 18, left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ width: isMobile ? 14 : 24, height: 1, background: "rgba(0,0,0,0.22)" }} />
-            <span style={{ fontFamily: "monospace", fontSize: isMobile ? 6 : 7, letterSpacing: "0.22em", color: "rgba(0,0,0,0.28)" }}>YEAR</span>
+            <span style={{ fontFamily: "monospace", fontSize: isMobile ? 6 : 7, letterSpacing: "0.22em", color: "rgba(0,0,0,0.28)" }}>{yearLabel}</span>
             <div style={{ width: isMobile ? 14 : 24, height: 1, background: "rgba(0,0,0,0.22)" }} />
         </div>
         <div
@@ -188,13 +183,32 @@ const Bird = ({ style }: { style: React.CSSProperties }) => (
     </svg>
 );
 
+type SignpostData = {
+    position: string;
+    year: string;
+    text: string;
+};
+
 const SignpostCard = ({
-    sign, index, isMobile, isTablet,
+    sign,
+    index,
+    isMobile,
+    isTablet,
+    cardDeptLabel,
+    cardSerial,
+    cardTitle,
+    cardAuthorized,
+    cardConfidential,
 }: {
-    sign: typeof SIGNPOSTS[number];
+    sign: SignpostData;
     index: number;
     isMobile: boolean;
     isTablet: boolean;
+    cardDeptLabel: string;
+    cardSerial: string;
+    cardTitle: string;
+    cardAuthorized: string;
+    cardConfidential: string;
 }) => {
     const cardW     = isMobile ? "min(82vw, 300px)" : isTablet ? "min(72vw, 370px)" : "450px";
     const pad       = isMobile ? "p-4" : "p-8";
@@ -221,14 +235,14 @@ const SignpostCard = ({
                 </div>
                 <div className="flex justify-between items-center border-b-4 border-black mb-4 pb-2">
                     <div className="flex flex-col">
-                        <p className="font-mono text-[9px] font-black uppercase tracking-widest">Department of Logic</p>
-                        <p className="font-mono text-[8px] opacity-60">Serial: GH-2026-AR</p>
+                        <p className="font-mono text-[9px] font-black uppercase tracking-widest">{cardDeptLabel}</p>
+                        <p className="font-mono text-[8px] opacity-60">{cardSerial}</p>
                     </div>
                     <p className="font-mono text-[12px] font-black tracking-tighter italic bg-black text-[#e8e2d2] px-2 uppercase">Ref_0{index + 1}</p>
                 </div>
                 <div className="text-center mb-4">
                     <h2 className={`title ${titleSize} font-black tracking-tighter leading-none uppercase border-y-2 border-black/10 py-2`}>
-                        Official Notice
+                        {cardTitle}
                     </h2>
                 </div>
                 <div className="relative z-10 px-2">
@@ -237,9 +251,9 @@ const SignpostCard = ({
                     </p>
                 </div>
                 <div className="mt-6 pt-3 border-t border-black/10 flex justify-between items-center italic">
-                    <p className="font-mono text-[7px] opacity-50">Authorized: Overseer Gustavo</p>
+                    <p className="font-mono text-[7px] opacity-50">{cardAuthorized}</p>
                     <div className="rotate-[-10deg] border-2 border-black text-black px-2 py-1 text-[9px] font-black rounded-sm uppercase tracking-tighter shadow-sm bg-[#e8e2d2]">
-                        Confidential
+                        {cardConfidential}
                     </div>
                 </div>
                 <div className="absolute pointer-events-none"
@@ -252,6 +266,16 @@ const SignpostCard = ({
 
 // ─── Main component ──
 export const JourneySection = () => {
+    const { t } = useLanguage();
+    const jt = t.journey;
+
+    // ── Build signposts from translations ──
+    const SIGNPOSTS: SignpostData[] = jt.signposts.map((s, i) => ({
+        position: ["12.5%", "37.5%", "62.5%"][i],
+        year: s.year,
+        text: s.text,
+    }));
+
     // Visual breakpoints — purely for rendering, never touches GSAP
     const { isMobile, isTablet, showHUD, showRuler } = useBreakpoint();
 
@@ -490,10 +514,10 @@ export const JourneySection = () => {
             className="relative w-full overflow-hidden bg-[#afafaf]"
             style={{ height: "100dvh" }} 
         >
-            <YearDisplay year={activeYear} isMobile={isMobile} />
+            <YearDisplay year={activeYear} isMobile={isMobile} yearLabel={jt.yearLabel} />
 
             {showHUD   && <Compass needleRef={compassNeedleRef} small={isMobile} />}
-            {showRuler && <Ruler   progress={scrollProgress}    isMobile={isMobile} />}
+            {showRuler && <Ruler   progress={scrollProgress} isMobile={isMobile} kmLabel={jt.kmLabel} />}
 
             {/* Film strip — left */}
             {showHUD && (
@@ -518,7 +542,7 @@ export const JourneySection = () => {
             {/* Frame counter */}
             <div className="absolute top-2 z-50 pointer-events-none select-none"
                 style={{ left: showHUD ? (isMobile ? "1.5rem" : "2rem") : "0.75rem", fontFamily: "monospace", fontSize: isMobile ? 7 : 9, letterSpacing: "0.12em", color: "rgba(220,213,197,0.25)" }}>
-                {isMobile ? "GH-2026" : "JOURNEY // GH-2026 // FR 00"}
+                {isMobile ? jt.frameCounterMob : jt.frameCounter}
             </div>
 
             {/* Film scratch */}
@@ -599,7 +623,17 @@ export const JourneySection = () => {
 
                 {SIGNPOSTS.map((sign, i) => (
                     <div key={i} className="absolute top-20 -translate-x-1/2 flex flex-col items-center" style={{ left: sign.position }}>
-                        <SignpostCard sign={sign} index={i} isMobile={isMobile} isTablet={isTablet} />
+                        <SignpostCard
+                            sign={sign}
+                            index={i}
+                            isMobile={isMobile}
+                            isTablet={isTablet}
+                            cardDeptLabel={jt.cardDeptLabel}
+                            cardSerial={jt.cardSerial}
+                            cardTitle={jt.cardTitle}
+                            cardAuthorized={jt.cardAuthorized}
+                            cardConfidential={jt.cardConfidential}
+                        />
                         <div className="w-[2px] h-20 bg-black/20 border-l border-dashed border-black/40" />
                     </div>
                 ))}
@@ -630,13 +664,13 @@ export const JourneySection = () => {
             {/* Scroll hint */}
             <div className="absolute z-50 pointer-events-none select-none"
                 style={{ bottom: isMobile ? 8 : 6, right: showHUD ? (isMobile ? "1.5rem" : "2rem") : "0.75rem", fontFamily: "monospace", fontSize: isMobile ? 8 : 9, letterSpacing: "0.14em", color: "rgba(0,0,0,0.28)", animation: "pulse 2s ease-in-out infinite" }}>
-                {isMobile ? "SCROLL ▶" : "SCROLL ▶▶"}
+                {isMobile ? jt.scrollHintMob : jt.scrollHint}
             </div>
 
             {/* Watermark */}
             {!isMobile && (
                 <div className="absolute bottom-10 right-10 rotate-12 opacity-10 select-none pointer-events-none">
-                    <p className="text-4xl md:text-6xl font-black title">TOP SECRET</p>
+                    <p className="text-4xl md:text-6xl font-black title">{jt.watermark}</p>
                 </div>
             )}
 

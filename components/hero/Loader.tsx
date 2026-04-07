@@ -17,6 +17,17 @@ export default function Loader({ onFinish }: { onFinish: () => void }) {
     const enableScanlines = true;
     const enableBurnEdge = true;
 
+    const skipLoader =
+        typeof window !== "undefined" && localStorage.getItem("skip-loader");
+
+    useEffect(() => {
+        if (skipLoader) {
+            localStorage.removeItem("skip-loader");
+        }
+    }, []);
+
+    if (skipLoader) return null;
+
     // ── COUNTDOWN ──
     useEffect(() => {
         if (!showCountdown) return;

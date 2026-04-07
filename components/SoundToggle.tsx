@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function SoundToggle() {
   const [isOn, setIsOn] = useState(false);
   const isOnRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     isOnRef.current = isOn;
@@ -52,7 +54,7 @@ export default function SoundToggle() {
     <div className="absolute bottom-10 right-10 z-20 text-[14px] tracking-[2.5px] sound-toggle">
       
       <span className="block mb-2 text-[11px] text-[#030303] title">
-        SOUND
+        {t.global.sound}
       </span>
 
       <div
@@ -64,7 +66,7 @@ export default function SoundToggle() {
             !isOn ? "opacity-100 text-black" : "opacity-80 text-[#222]"
           }`}
         >
-          OFF
+          {t.global.soundOff}
         </span>
 
         {/* SLIDER */}
@@ -90,7 +92,7 @@ export default function SoundToggle() {
             isOn ? "opacity-100 text-black" : "opacity-80 text-[#222]"
           }`}
         >
-          ON
+          {t.global.soundOn}
         </span>
       </div>
     </div>
